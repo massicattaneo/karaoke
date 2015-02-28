@@ -1,5 +1,16 @@
 module.exports = function (grunt) {
 
+    var getBowerPaths = function () {
+        var config = grunt.file.read('config.js'), arr = [];
+        config = config.replace('require.config({', 'var o = {');
+        config = config.replace('requirejs.config({', 'var o = {');
+        config = config.replace('});', '}');
+        eval(config);
+        for (var path in o.paths) {
+            arr[arr.length] = o.paths[path] + '.js';
+        }
+        return arr;
+    };
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -7,17 +18,23 @@ module.exports = function (grunt) {
             all: {
                 rjsConfig: 'config.js',
                 options: {
-                    exclude: []
+                    transitive: true,
+                    'exclude-dev': true
                 }
             }
         },
+        bowerPaths: getBowerPaths(),
         watch: {
             scripts: {
                 files: ['js/**/*.js'],
-                tasks: ['jshint', 'jasmine'],
+                tasks: [],
                 options: {
                     spawn: false
                 }
+            },
+            test: {
+                files: ['js/**/*.js', 'tests/**/*Spec.js'],
+                tasks: ['jasmine']
             }
         },
         uglify: {
@@ -46,18 +63,28 @@ module.exports = function (grunt) {
                 src: 'js/**/*.js',
                 options: {
                     specs: 'tests/*Spec.js',
-                    vendor: ''
+                    vendor: '<%= bowerPaths %>'
                 }
+            }
+        },
+        wiredep: {
+            task: {
+                src: [
+                    'index.html',   // .html support...
+                    'style.scss'  // .scss & .sass support...
+                ],
+                options: {}
             }
         }
     });
 
+    grunt.loadNpmTasks('grunt-bower-requirejs');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
-    grunt.loadNpmTasks('grunt-bower-requirejs');
+    grunt.loadNpmTasks('grunt-wiredep');
 
-    grunt.registerTask('demo', ['bowerRequirejs', 'watch']);
+    grunt.registerTask('demo', ['bowerRequirejs', 'wiredep', 'watch']);
 
 };
