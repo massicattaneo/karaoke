@@ -19,7 +19,7 @@
 //* for the data, make sure you scale the data accordingly (for 16bit signed integers
 //* you would have to divide (and multiply) by 32768). 
 
-var PitchShifter = base2.Base.extend({
+var PitchShifter = Class.create({
     MAX_FRAME_LENGTH: 16000,
     gInFIFO: [],//float
     gOutFIFO: [],//float
@@ -37,7 +37,7 @@ var PitchShifter = base2.Base.extend({
     outdata: [], //output
 
     constructor: function (/*float*/ pitchShift, /*long*/ numSampsToProcess, /*float*/ sampleRate, /*float[]*/ indata) {
-        this.PitchShift(pitchShift, numSampsToProcess, 2048, 10, sampleRate, indata);
+        this.PitchShift(pitchShift, numSampsToProcess, 32, 10, sampleRate, indata);
     },
 
     PitchShift: function (/*float*/ pitchShift, /*long*/ numSampsToProcess, /*long*/ fftFrameSize, /*long*/ osamp, /*float*/ sampleRate, /*float[]*/ indata) {

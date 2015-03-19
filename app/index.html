@@ -7,6 +7,8 @@
     <script src="js/soundLoader.js"></script>
     <script src="js/sounds.js"></script>
     <script src="js/newPitchShift.js"></script>
+    <script src="js/stream.js"></script>
+    <script src="js/midifile.js"></script>
     <title></title>
 </head>
 <body>
@@ -22,47 +24,17 @@
             Instruments[bufferNames[b]] = {}
             Instruments[bufferNames[b]].buffers = buffers[b];
         }
-//        playSound("piano", "D3", 1, 1);
-//        playSound("piano", "E3", 2, 1);
-//        playSound("piano", "E3", 1, 1);
-//        playSequence();
+
     };
 
     function playSequence() {
-
         // We'll start playing the rhythm 100 milliseconds from "now"
         var startTime = sounds.audioContext.currentTime + 0.100;
         var tempo = 90; // BPM (beats per minute)
         var eighthNoteTime = (60 / tempo) / 2;
-
-        //Piano
         for (var bar = 0; bar < 16; bar++) {
             var time = startTime + bar * 8 * eighthNoteTime;
-//                playSound("piano", "C0", time);
-//                playSound("piano", "C0", time, 4, 0.5);
-//                playSound("piano", "D4", time + 1 * eighthNoteTime, 1 * eighthNoteTime, 0.2);
-//                playSound("piano", "G4", time);
-//                playSound("piano", "C5", time + 3 * eighthNoteTime, 1 * eighthNoteTime, 0.01);
 
-            //playSound("piano", "C1", time + 2 * eighthNoteTime);
-            //playSound("piano", "C1", time + 4 * eighthNoteTime);
-
-            // Play the bass (kick) drum on beats 1, 5
-//                playSound("drum", "C0", time);
-//                playSound("drum", "C0", time + 3.5 * eighthNoteTime);
-//                playSound("drum", "C0", time + 4 * eighthNoteTime);
-
-            // Play the snare drum on beats 3, 7
-//                playSound("drum", "C1", time + 2 * eighthNoteTime);
-//                playSound("drum", "C1", time + 6 * eighthNoteTime);
-
-            // Play the hi-hat every eighth note.
-//                playSound("drum", "C2", time + 0 * eighthNoteTime, 1, 0.1);
-//                playSound("drum", "C2", time + 2 * eighthNoteTime, 1, 0.1);
-//                playSound("drum", "C2", time + 3.5 * eighthNoteTime, 1, 0.1);
-//                playSound("drum", "C2", time + 5 * eighthNoteTime, 1, 0.1);
-//                playSound("drum", "C2", time + 6 * eighthNoteTime, 1, 0.1);
-//                playSound("drum", "C2", time + 7 * eighthNoteTime, 1, 0.1);
         }
     }
 
@@ -87,16 +59,58 @@
         source.start(startTime);
         if (length) source.stop(startTime + length);
     }
+
+    function loadRemote(path, callback) {
+        var fetch = new XMLHttpRequest();
+        fetch.open('GET', path);
+        fetch.overrideMimeType("text/plain; charset=x-user-defined");
+        fetch.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                /* munge response into a binary string */
+                var t = this.responseText || "";
+                var ff = [];
+                var mx = t.length;
+                var scc = String.fromCharCode;
+                for (var z = 0; z < mx; z++) {
+                    ff[z] = scc(t.charCodeAt(z) & 255);
+                }
+                callback(ff.join(""));
+            }
+        }
+        fetch.send();
+    }
+
+
+    function play() {
+        loadRemote('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid', function (data) {
+            midiFile = MidiFile(data);
+//            synth = Synth(44100);
+//            replayer = Replayer(midiFile, synth);
+//            audio = AudioPlayer(replayer);
+
+//            var track = 2;
+//            for (var index in midiFile.tracks[track]) {
+//                if (midiFile.tracks[track][index] && midiFile.tracks[track][index].subtype === 'noteOn') {
+//                    console.log(midiFile.tracks[track][index]);
+//                }
+//            }
+
+            var delta = 0;
+            for (var index = 0; index < 1000; index++) {
+                for (var t in midiFile.tracks) {
+                    if (midiFile.tracks[t][index] && midiFile.tracks[t][index].subtype === 'noteOn') {
+                        var o = midiFile.tracks[t][index];
+                        delta += parseInt(o.deltaTime / 100);
+                        playSound('piano', o.noteNumber - 24, sounds.audioContext.currentTime + delta, 4, o.velocity / 127);
+                    }
+                }
+            }
+        })
+    }
+
 </script>
 
-<button onclick="playSound('piano', 'C4', sounds.audioContext.currentTime, 2)">C4</button>
-<button onclick="playSound('piano', 'D4', sounds.audioContext.currentTime, 2)">D4</button>
-<button onclick="playSound('piano', 'E4', sounds.audioContext.currentTime, 2)">E4</button>
-<button onclick="playSound('piano', 'F4', sounds.audioContext.currentTime, 2)">F4</button>
-<button onclick="playSound('piano', 'G4', sounds.audioContext.currentTime, 2)">G4</button>
-<button onclick="playSound('piano', 'A4', sounds.audioContext.currentTime, 2)">A4</button>
-<button onclick="playSound('piano', 'B4', sounds.audioContext.currentTime, 2)">B4</button>
-<button onclick="playSound('piano', 'C5', sounds.audioContext.currentTime, 2)">C5</button>
+<input type="submit" value="go" onclick="play()"/>
 
 </body>
 </html>

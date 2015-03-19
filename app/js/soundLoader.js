@@ -95,8 +95,6 @@ BufferLoader = Class.create({
     }
 });
 
-//this.createBuffer(this.bufferList[(samplePos-1)], sounds.Cnote.getNoteNameFromAbsVal(i), i-sampleNote, i)
-
 sounds.fillBuffers = function () {
     for (var i in buffers) {
         var temp = buffers[i].bufferList;
@@ -117,21 +115,10 @@ sounds.fillBuffers = function () {
     }
 }
 
-sounds.fadeOutBuffers = function () {
-    for (i in buffers) {
-        var temp = buffers[i].bufferList;
-        for (j = 0; j < temp.length; j++) {
-            var f = new soundSampler(temp[j]);
-            f.fadeOut(10000);
-            temp[j] = f.buffer;
-        }
-    }
-};
-
 sounds.samples = {
     piano: {
         folder: "../soundsLibrary/StereoGrand/",
-        spectrum: {type: "range", from: "C4", to: "C5"},
+        spectrum: {type: "range", from: "C0", to: "C6"},
         samples: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'F4', 'C5s', 'G5s', 'C6']
     },
     drum: {

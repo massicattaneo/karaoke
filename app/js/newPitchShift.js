@@ -12,13 +12,16 @@
         // semitones = 69 + 12 * Math.log(frequency / 440);
         // pitchFinal = pitchStart + semitones
         // freqFinal = Math.pow(2, semitones/12) * freqStart
+
+        //semitones
+        var percentage = [0, 5.946, 12.246, 18.921, 25.992, 33.484, 41.421, 49.831, 58.740, 68.179, 78.180, 88.775, 100];
         this.ch1Temp[0] = this.ch1[0];
         this.ch2Temp[0] = this.ch2[0];
-        var factor = 1 + (1 / 14.1 * pitch), j = 1;
+        var factor = 1 + (percentage[pitch] / 100), j = 1;
 
         for (var i = 1; i < this.ch1.length; i = i + factor) {
-            this.ch1Temp[j] = this.ch1[parseInt(i)];
-            this.ch2Temp[j] = this.ch2[parseInt(i)];
+            this.ch1Temp[j] = this.ch1[Math.ceil(i)];
+            this.ch2Temp[j] = this.ch2[Math.ceil(i)];
             j++;
         }
         this._setBuffer(this.ch1Temp, this.ch2Temp);
