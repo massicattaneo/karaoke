@@ -31,7 +31,6 @@ sounds.soundsReady = function () {
 
 sounds.loadedAllLibraries = function () {
     sounds.fillBuffers();
-    //sounds.fadeOutBuffers();
     sounds.soundsReady();
 }
 
@@ -99,7 +98,7 @@ BufferLoader = Class.create({
 //this.createBuffer(this.bufferList[(samplePos-1)], sounds.Cnote.getNoteNameFromAbsVal(i), i-sampleNote, i)
 
 sounds.fillBuffers = function () {
-    for (i in buffers) {
+    for (var i in buffers) {
         var temp = buffers[i].bufferList;
         var tempNotes = buffers[i].notes;
         var sampleNote = 0;
@@ -127,13 +126,13 @@ sounds.fadeOutBuffers = function () {
             temp[j] = f.buffer;
         }
     }
-}
+};
 
 sounds.samples = {
     piano: {
         folder: "../soundsLibrary/StereoGrand/",
-        spectrum: {type: "range", from: "C0", to: "C7"},
-        samples: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'D4', 'E4', 'F4', 'G4', 'C5s', 'G5s', 'C6']
+        spectrum: {type: "range", from: "C4", to: "C5"},
+        samples: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'F4', 'C5s', 'G5s', 'C6']
     },
     drum: {
         folder: "../soundsLibrary/DrumKit/",

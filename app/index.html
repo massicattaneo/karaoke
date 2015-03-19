@@ -11,7 +11,7 @@
 </head>
 <body>
 <script>
-    sounds.loader(["piano", "drum"]);
+    sounds.loader(["piano"]);
 
     var pianoBuffer;
 
@@ -22,11 +22,11 @@
             Instruments[bufferNames[b]] = {}
             Instruments[bufferNames[b]].buffers = buffers[b];
         }
-        playSound("piano", "D3", 1, 1);
-        playSound("piano", "E3", 2, 1);
-        playSound("piano", "E3", 1, 1);
-        playSequence();
-    }
+//        playSound("piano", "D3", 1, 1);
+//        playSound("piano", "E3", 2, 1);
+//        playSound("piano", "E3", 1, 1);
+//        playSequence();
+    };
 
     function playSequence() {
 
@@ -88,6 +88,15 @@
         if (length) source.stop(startTime + length);
     }
 </script>
+
+<button onclick="playSound('piano', 'C4', sounds.audioContext.currentTime, 2)">C4</button>
+<button onclick="playSound('piano', 'D4', sounds.audioContext.currentTime, 2)">D4</button>
+<button onclick="playSound('piano', 'E4', sounds.audioContext.currentTime, 2)">E4</button>
+<button onclick="playSound('piano', 'F4', sounds.audioContext.currentTime, 2)">F4</button>
+<button onclick="playSound('piano', 'G4', sounds.audioContext.currentTime, 2)">G4</button>
+<button onclick="playSound('piano', 'A4', sounds.audioContext.currentTime, 2)">A4</button>
+<button onclick="playSound('piano', 'B4', sounds.audioContext.currentTime, 2)">B4</button>
+<button onclick="playSound('piano', 'C5', sounds.audioContext.currentTime, 2)">C5</button>
 
 </body>
 </html>

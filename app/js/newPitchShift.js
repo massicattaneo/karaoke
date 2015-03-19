@@ -1,7 +1,4 @@
 ﻿var soundSampler = Class.create({
-    ch1: new Float32Array,
-    ch2: new Float32Array,
-    buffer: {},
     constructor: function (buffer) {
         this.ch1 = buffer.getChannelData(0);
         this.ch2 = (buffer.numberOfChannels == 2) ? buffer.getChannelData(1) : buffer.getChannelData(0);
@@ -17,32 +14,12 @@
         // freqFinal = Math.pow(2, semitones/12) * freqStart
         this.ch1Temp[0] = this.ch1[0];
         this.ch2Temp[0] = this.ch2[0];
-        var factor = 1 + 1 / 12 * pitch, j = 1;
+        var factor = 1 + (1 / 14.1 * pitch), j = 1;
 
-        for (i = 1; i < this.ch1.length; i = i + factor) {
+        for (var i = 1; i < this.ch1.length; i = i + factor) {
             this.ch1Temp[j] = this.ch1[parseInt(i)];
             this.ch2Temp[j] = this.ch2[parseInt(i)];
             j++;
-        }
-        this._setBuffer(this.ch1Temp, this.ch2Temp);
-        return this;
-    },
-    volume: function (volume) {
-        for (i = 0; i < this.ch1Temp.length; i++) {
-            this.ch1Temp[i] = this.ch1[i] * volume;
-            this.ch2Temp[i] = this.ch2[i] * volume;
-        }
-        this._setBuffer(this.ch1Temp, this.ch2Temp);
-        return this;
-    },
-    fadeOut: function (length) {
-        var volume = 1, tot = this.ch1Temp.length - length;
-        this.ch1Temp = this.ch1;
-        this.ch2Temp = this.ch2;
-        for (i = tot; i < this.ch1Temp.length; i++) {
-            this.ch1Temp[i] = this.ch1[i] * volume;
-            this.ch2Temp[i] = this.ch2[i] * volume;
-            volume = (this.ch1Temp.length - i) / length;
         }
         this._setBuffer(this.ch1Temp, this.ch2Temp);
         return this;
