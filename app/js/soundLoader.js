@@ -1,9 +1,10 @@
-﻿/// <reference path="sounds.js" />
-
+﻿
 var counter = 0;
 var totalToLoad = 0;
 var buffers = [];
 var bufferNames = [];
+
+var sounds = sounds || {};
 
 sounds.loader = function (data) {
     totalToLoad = data.length;
@@ -34,7 +35,7 @@ sounds.loadedAllLibraries = function () {
     sounds.soundsReady();
 }
 
-BufferLoader = base2.Base.extend({
+BufferLoader = Class.create({
     constructor: function (context, instrument, callback) {
         this.context = context;
         this.instrument = instrument;
@@ -64,7 +65,7 @@ BufferLoader = base2.Base.extend({
                     //save the buffer
                     loader.bufferList[index] = buffer;
                     //save the relative note
-                    loader.notes[index] = new sounds.Cnote(url.substr(url.lastIndexOf('/') + 1).replace(".wav", ""));
+                    loader.notes[index] = new sounds.note(url.substr(url.lastIndexOf('/') + 1).replace(".wav", ""));
 
                     if (++loader.loadCount == loader.urlList.length)
                         loader.onload(loader.bufferList);
@@ -83,13 +84,13 @@ BufferLoader = base2.Base.extend({
     },
     load: function () {
         var samplePos = 0;
-        var sampleNote = new sounds.Cnote(this.instrument.samples[samplePos]).absVal;
+        var sampleNote = new sounds.note(this.instrument.samples[samplePos]).absVal;
         for (i = 0; i < 100; i++) {
             if (i == sampleNote) {
                 this.loadBuffer(this.instrument.folder + this.urlList[samplePos] + ".wav", i);
                 samplePos++;
                 if (samplePos == this.instrument.samples.length) break;
-                sampleNote = new sounds.Cnote(this.instrument.samples[samplePos]).absVal;
+                sampleNote = new sounds.note(this.instrument.samples[samplePos]).absVal;
             }
         }
     }
@@ -108,7 +109,7 @@ sounds.fillBuffers = function () {
                 var ps = new soundSampler(sampleBuffer);
                 ps.shift(j - sampleNote);
                 temp[j] = ps.buffer;
-                tempNotes[j] = new sounds.Cnote(sounds.Cnote.getNoteNameFromAbsVal(j));
+                tempNotes[j] = new sounds.note(sounds.note.getNoteNameFromAbsVal(j));
             } else {
                 sampleNote = j;
                 sampleBuffer = temp[j];
@@ -130,12 +131,12 @@ sounds.fadeOutBuffers = function () {
 
 sounds.samples = {
     piano: {
-        folder: "soundsLibrary/StereoGrand/",
+        folder: "../soundsLibrary/StereoGrand/",
         spectrum: {type: "range", from: "C0", to: "C7"},
-        samples: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'D4', 'F4', 'C5s', 'G5s', 'C6']
+        samples: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'D4', 'E4', 'F4', 'G4', 'C5s', 'G5s', 'C6']
     },
     drum: {
-        folder: "soundsLibrary/DrumKit/",
+        folder: "../soundsLibrary/DrumKit/",
         spectrum: {type: "samples"},
         samples: ['C0', /*Kick*/ 'C1', /*Snare*/ 'C2' /* HiHat */]
     }

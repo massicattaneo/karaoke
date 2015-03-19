@@ -1,12 +1,15 @@
 ﻿
 var sounds = sounds || {};
 
-sounds.Cnote = Class.create({
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+sounds.audioContext = new AudioContext();
+
+sounds.note = Class.create({
     constructor: function (name) {
         this.name = name;
         this.octave = parseInt(name.substr(1, 1), 10);
         this.note = name.substr(0, 1);
-        this.noteVal = parseInt(sounds.Cnote.notes.indexOf(this.note), 10);
+        this.noteVal = parseInt(sounds.note.notes.indexOf(this.note), 10);
         this.alter = 0;
         if (name.substr(2, 1)) {
             if (name.substr(2, 1) === "s") {
@@ -20,9 +23,9 @@ sounds.Cnote = Class.create({
     }
 });
 
-sounds.Cnote.notes = ["C", "", "D", "", "E", "F", "", "G", "", "A", "", "B"];
-sounds.Cnote.notesSharp = ["C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B"];
-sounds.Cnote.getNoteNameFromAbsVal = function (absVal) {
+sounds.note.notes = ["C", "", "D", "", "E", "F", "", "G", "", "A", "", "B"];
+sounds.note.notesSharp = ["C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B"];
+sounds.note.getNoteNameFromAbsVal = function (absVal) {
     var note = "";
     var octave = parseInt(absVal / 12);
     note = this.notesSharp[absVal % 12];

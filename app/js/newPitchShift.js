@@ -1,7 +1,4 @@
-﻿/// <reference path="sounds.js" />
-/// <reference path="shared/js/base2.js" />
-
-var soundSampler = base2.Base.extend({
+﻿var soundSampler = Class.create({
     ch1: new Float32Array,
     ch2: new Float32Array,
     buffer: {},
@@ -30,7 +27,7 @@ var soundSampler = base2.Base.extend({
         this._setBuffer(this.ch1Temp, this.ch2Temp);
         return this;
     },
-    volume: function (/* number od semitones */ volume) {
+    volume: function (volume) {
         for (i = 0; i < this.ch1Temp.length; i++) {
             this.ch1Temp[i] = this.ch1[i] * volume;
             this.ch2Temp[i] = this.ch2[i] * volume;

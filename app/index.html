@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../bower_components/core/build/core.min.js"></script>
+    <script src="js/soundLoader.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="js/newPitchShift.js"></script>
+    <title></title>
+</head>
+<body>
+<script>
+    sounds.loader(["piano", "drum"]);
+
+    var pianoBuffer;
+
+    var Instruments = {};
+
+    sounds.soundsReady = function () {
+        for (b in buffers) {
+            Instruments[bufferNames[b]] = {}
+            Instruments[bufferNames[b]].buffers = buffers[b];
+        }
+        playSound("piano", "D3", 1, 1);
+        playSound("piano", "E3", 2, 1);
+        playSound("piano", "E3", 1, 1);
+        playSequence();
+    }
+
+    function playSequence() {
+
+        // We'll start playing the rhythm 100 milliseconds from "now"
+        var startTime = sounds.audioContext.currentTime + 0.100;
+        var tempo = 90; // BPM (beats per minute)
+        var eighthNoteTime = (60 / tempo) / 2;
+
+        //Piano
+        for (var bar = 0; bar < 16; bar++) {
+            var time = startTime + bar * 8 * eighthNoteTime;
+//                playSound("piano", "C0", time);
+//                playSound("piano", "C0", time, 4, 0.5);
+//                playSound("piano", "D4", time + 1 * eighthNoteTime, 1 * eighthNoteTime, 0.2);
+//                playSound("piano", "G4", time);
+//                playSound("piano", "C5", time + 3 * eighthNoteTime, 1 * eighthNoteTime, 0.01);
+
+            //playSound("piano", "C1", time + 2 * eighthNoteTime);
+            //playSound("piano", "C1", time + 4 * eighthNoteTime);
+
+            // Play the bass (kick) drum on beats 1, 5
+//                playSound("drum", "C0", time);
+//                playSound("drum", "C0", time + 3.5 * eighthNoteTime);
+//                playSound("drum", "C0", time + 4 * eighthNoteTime);
+
+            // Play the snare drum on beats 3, 7
+//                playSound("drum", "C1", time + 2 * eighthNoteTime);
+//                playSound("drum", "C1", time + 6 * eighthNoteTime);
+
+            // Play the hi-hat every eighth note.
+//                playSound("drum", "C2", time + 0 * eighthNoteTime, 1, 0.1);
+//                playSound("drum", "C2", time + 2 * eighthNoteTime, 1, 0.1);
+//                playSound("drum", "C2", time + 3.5 * eighthNoteTime, 1, 0.1);
+//                playSound("drum", "C2", time + 5 * eighthNoteTime, 1, 0.1);
+//                playSound("drum", "C2", time + 6 * eighthNoteTime, 1, 0.1);
+//                playSound("drum", "C2", time + 7 * eighthNoteTime, 1, 0.1);
+        }
+    }
+
+    function playSound(instrument, note, startTime, length, gain) {
+        var source = sounds.audioContext.createBufferSource();
+
+        var gainNode = sounds.audioContext.createGain();
+
+
+        var abs;
+        if (isNaN(note))
+            abs = new sounds.note(note).absVal;
+        else
+            abs = note;
+
+        gainNode.gain.value = gain || 1;
+        source.buffer = Instruments[instrument].buffers.bufferList[abs];
+        source.connect(gainNode);
+        gainNode.connect(sounds.audioContext.destination);
+
+        //startTime in seconds
+        source.start(startTime);
+        if (length) source.stop(startTime + length);
+    }
+</script>
+
+</body>
+</html>
