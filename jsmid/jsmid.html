@@ -11,6 +11,20 @@
     <script src="synth.js"></script>
     <script src="audio.js"></script>
     <script>
+        sounds.loader(["piano"]);
+
+        var pianoBuffer;
+
+        var Instruments = {};
+
+        sounds.soundsReady = function () {
+            for (b in buffers) {
+                Instruments[bufferNames[b]] = {}
+                Instruments[bufferNames[b]].buffers = buffers[b];
+            }
+        };
+
+
         function loadRemote(path, callback) {
             var fetch = new XMLHttpRequest();
             fetch.open('GET', path);
