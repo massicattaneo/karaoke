@@ -1,16 +1,10 @@
 function SamplerGenerator(note) {
     var self = {'alive': true};
-    var t = 0;
-
     self.generate = function (buf, offset, count) {
-        var buffer = Instruments['piano'].buffers.bufferList[note - 24].getChannelData(1);
+        var buffer = Instruments['piano'].buffers.bufferList[note - 24].getChannelData(0);
         for (var i = 0; i < count; i++) {
-
-            buf[i] += buffer[i];
-            buf[i] += buffer[i];
-            //buf[offset++] += buffer[count-offset];
-
-            t++;
+            buf[offset++] += buffer[i];
+            buf[offset++] += buffer[i];
         }
     };
 

@@ -1,7 +1,7 @@
 ﻿var soundSampler = Class.create({
     constructor: function (buffer) {
         this.ch1 = buffer.getChannelData(0);
-        this.ch2 = (buffer.numberOfChannels == 2) ? buffer.getChannelData(1) : buffer.getChannelData(0);
+        this.ch2 = (buffer.numberOfChannels === 2) ? buffer.getChannelData(1) : buffer.getChannelData(0);
         this.ch1Temp = new Float32Array(this.ch1.length);
         this.ch2Temp = new Float32Array(this.ch2.length);
         this.buffer = sounds.audioContext.createBuffer(2, this.ch1.length, 44100);

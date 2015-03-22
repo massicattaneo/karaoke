@@ -8,7 +8,7 @@ var sounds = sounds || {};
 
 sounds.loader = function (data) {
     totalToLoad = data.length;
-    for (i in data) {
+    for (var i in data) {
         bufferNames[buffers.length] = data[i];
         buffers[buffers.length] = new BufferLoader(
             sounds.audioContext,
@@ -17,22 +17,22 @@ sounds.loader = function (data) {
         );
         buffers[buffers.length - 1].load();
     }
-}
+};
 
 sounds.loadedOneLibrary = function () {
     counter++;
-    if (totalToLoad == counter) {
+    if (totalToLoad === counter) {
         sounds.loadedAllLibraries();
     }
-}
+};
 
 sounds.soundsReady = function () {
-}
+};
 
 sounds.loadedAllLibraries = function () {
     sounds.fillBuffers();
     sounds.soundsReady();
-}
+};
 
 BufferLoader = Class.create({
     constructor: function (context, instrument, callback) {
@@ -40,8 +40,8 @@ BufferLoader = Class.create({
         this.instrument = instrument;
         this.urlList = instrument.samples;
         this.onload = callback;
-        this.bufferList = new Array();
-        this.notes = new Array();
+        this.bufferList = [];
+        this.notes = [];
         this.loadCount = 0;
     },
     loadBuffer: function (url, index) {
@@ -66,29 +66,32 @@ BufferLoader = Class.create({
                     //save the relative note
                     loader.notes[index] = new sounds.note(url.substr(url.lastIndexOf('/') + 1).replace(".wav", ""));
 
-                    if (++loader.loadCount == loader.urlList.length)
+                    if (++loader.loadCount === loader.urlList.length) {
                         loader.onload(loader.bufferList);
+                    }
                 },
                 function (error) {
                     console.error('decodeAudioData error', error);
                 }
             );
-        }
+        };
 
         request.onerror = function () {
             alert('BufferLoader: XHR error');
-        }
+        };
 
         request.send();
     },
     load: function () {
         var samplePos = 0;
         var sampleNote = new sounds.note(this.instrument.samples[samplePos]).absVal;
-        for (i = 0; i < 100; i++) {
-            if (i == sampleNote) {
+        for (var i = 0; i < 100; i++) {
+            if (i === sampleNote) {
                 this.loadBuffer(this.instrument.folder + this.urlList[samplePos] + ".wav", i);
                 samplePos++;
-                if (samplePos == this.instrument.samples.length) break;
+                if (samplePos === this.instrument.samples.length){
+                    break;
+                }
                 sampleNote = new sounds.note(this.instrument.samples[samplePos]).absVal;
             }
         }
@@ -102,7 +105,7 @@ sounds.fillBuffers = function () {
         var sampleNote = 0;
         var sampleBuffer = temp[sampleNote];
         for (j = 0; j < temp.length; j++) {
-            if (typeof temp[j] == "undefined") {
+            if (typeof temp[j] === "undefined") {
                 var ps = new soundSampler(sampleBuffer);
                 ps.shift(j - sampleNote);
                 temp[j] = ps.buffer;
@@ -113,7 +116,7 @@ sounds.fillBuffers = function () {
             }
         }
     }
-}
+};
 
 sounds.samples = {
     piano: {

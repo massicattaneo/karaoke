@@ -56,7 +56,7 @@ module.exports = function (grunt) {
 
     grunt.task.registerTask('watchTest', 'A sample task that watch one test', function (testname) {
         if (arguments.length !== 0) {
-            grunt.config('watch.test.files', ['js/' + testname + '.js', 'tests/' + testname + 'Spec.js']);
+            grunt.config('watch.test.files', ['app/js/' + testname + '.js', 'tests/' + testname + 'Spec.js']);
             grunt.config('watch.test.tasks', ['jasmintest:' + testname]);
         }
         grunt.task.run('jshint');

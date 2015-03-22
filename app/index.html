@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <script src="../bower_components/jquery/dist/jquery.js"></script>
     <script src="../bower_components/core/build/core.min.js"></script>
+    <script src="../jsmid/synth.js"></script>
+    <script src="../jsmid/stream.js"></script>
+    <script src="../jsmid/replayer.js"></script>
+    <script src="../jsmid/midifile.js"></script>
+    <script src="../jsmid/audio.js"></script>
     <script src="js/soundLoader.js"></script>
     <script src="js/sounds.js"></script>
     <script src="js/newPitchShift.js"></script>
-    <script src="js/stream.js"></script>
-    <script src="js/midifile.js"></script>
     <title></title>
 </head>
 <body>
@@ -84,10 +87,10 @@
     function play() {
         loadRemote('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid', function (data) {
             midiFile = MidiFile(data);
-//            synth = Synth(44100);
-//            replayer = Replayer(midiFile, synth);
-//            audio = AudioPlayer(replayer);
-
+            synth = Synth(44100);
+            replayer = Replayer(midiFile, synth);
+            audio = AudioPlayer(replayer);
+//
 //            var track = 2;
 //            for (var index in midiFile.tracks[track]) {
 //                if (midiFile.tracks[track][index] && midiFile.tracks[track][index].subtype === 'noteOn') {
@@ -95,16 +98,16 @@
 //                }
 //            }
 
-            var delta = 0;
-            for (var index = 0; index < 1000; index++) {
-                for (var t in midiFile.tracks) {
-                    if (midiFile.tracks[t][index] && midiFile.tracks[t][index].subtype === 'noteOn') {
-                        var o = midiFile.tracks[t][index];
-                        delta += parseInt(o.deltaTime / 100);
-                        playSound('piano', o.noteNumber - 24, sounds.audioContext.currentTime + delta, 4, o.velocity / 127);
-                    }
-                }
-            }
+//            var delta = 0;
+//            for (var index = 0; index < 1000; index++) {
+//                for (var t in midiFile.tracks) {
+//                    if (midiFile.tracks[t][index] && midiFile.tracks[t][index].subtype === 'noteOn') {
+//                        var o = midiFile.tracks[t][index];
+//                        delta += parseInt(o.deltaTime / 100);
+//                        playSound('piano', o.noteNumber - 24, sounds.audioContext.currentTime + delta, 4, o.velocity / 127);
+//                    }
+//                }
+//            }
         })
     }
 
