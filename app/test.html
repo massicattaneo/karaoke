@@ -37,17 +37,22 @@
         p.onDone(function(data) {
             file = new MidiFileReader(data);
             console.log(file.header);
-            for (var t in file.tracks) {
-                document.write('track: ' + t + '<br/>');
-                for (var ch=1; ch<=16; ch++) {
-                    document.write('channel: ' + ch + '<br/>');
-                    var notes = file.tracks[t].getCollection('channel', ch);
-                    notes.each(function(i, k, o) {
-                        document.write(JSON.stringify(o) + '<br/> ')
-                    });
-                }
-            }
+//            for (var t in file.tracks) {
+//                document.write('track: ' + t + '<br/>');
+//                for (var ch=1; ch<=16; ch++) {
+//                    document.write('channel: ' + ch + '<br/>');
+//                    var notes = file.tracks[t].getCollection('channel', ch);
+//                    notes.each(function(i, k, o) {
+//                        document.write(JSON.stringify(o) + '<br/> ')
+//                    });
+//                }
+//            }
+
+
+
         });
+
+
 
     </script>
 </body>
