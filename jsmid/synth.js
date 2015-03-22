@@ -1,16 +1,3 @@
-function SamplerGenerator(note) {
-    var self = {'alive': true};
-    self.generate = function (buf, offset, count) {
-        var buffer = Instruments['piano'].buffers.bufferList[note - 24].getChannelData(0);
-        for (var i = 0; i < count; i++) {
-            buf[offset++] += buffer[i];
-            buf[offset++] += buffer[i];
-        }
-    };
-
-    return self;
-}
-
 function SineGenerator(freq) {
     var self = {'alive': true};
     var period = sampleRate / freq;
@@ -134,10 +121,9 @@ PianoProgram = {
     'decayTime': 0.3,
     'releaseTime': 0.02,
     'createNote': function (note, velocity) {
-        //var frequency = midiToFrequency(note);
+        var frequency = midiToFrequency(note);
         return ADSRGenerator(
-            SamplerGenerator(note),
-            //SineGenerator(frequency),
+            SineGenerator(frequency),
             this.attackAmplitude * (velocity / 128), this.sustainAmplitude * (velocity / 128),
             this.attackTime, this.decayTime, this.releaseTime
         );
@@ -148,8 +134,7 @@ StringProgram = {
     'createNote': function (note, velocity) {
         var frequency = midiToFrequency(note);
         return ADSRGenerator(
-            SamplerGenerator(note),
-            //SineGenerator(frequency),
+            SineGenerator(frequency),
             0.5 * (velocity / 128), 0.2 * (velocity / 128),
             0.4, 0.8, 0.4
         );

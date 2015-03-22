@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test load</title>
+    <script src="../bower_components/core/build/core.min.js"></script>
+    <script src="js/Stream.js"></script>
+    <script src="js/MidiFileReader.js"></script>
+    <script src="js/sounds.js"></script>
+</head>
+<body>
+    <script>
+        function loadRemote(path) {
+            var promise = new Promise();
+            var fetch = new XMLHttpRequest();
+            fetch.open('GET', path);
+            fetch.overrideMimeType("text/plain; charset=x-user-defined");
+            fetch.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    /* munge response into a binary string */
+                    var t = this.responseText || "";
+                    var ff = [];
+                    var mx = t.length;
+                    var scc = String.fromCharCode;
+                    for (var z = 0; z < mx; z++) {
+                        ff[z] = scc(t.charCodeAt(z) & 255);
+                    }
+                    promise.resolve(ff.join(""));
+                }
+            };
+            fetch.send();
+            return promise;
+        }
+
+        var p = loadRemote('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid');
+        var file;
+        p.onDone(function(data) {
+            file = new MidiFileReader(data);
+            console.log(file.header);
+            for (var t in file.tracks) {
+                document.write('track: ' + t + '<br/>');
+                for (var ch=1; ch<=16; ch++) {
+                    document.write('channel: ' + ch + '<br/>');
+                    var notes = file.tracks[t].getCollection('channel', ch);
+                    notes.each(function(i, k, o) {
+                        document.write(JSON.stringify(o) + '<br/> ')
+                    });
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

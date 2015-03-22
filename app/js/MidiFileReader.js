@@ -1,4 +1,4 @@
-var MidiFileReader;
+var MidiFileReader, MidiEvent;
 
 (function () {
 
@@ -18,11 +18,15 @@ var MidiFileReader;
         return {'id': id, 'length': length, 'data': data};
     };
 
+    MidiEvent = Class.create({
+
+    });
+
     MidiFileReader = Class.create({
         constructor: function(data) {
             this.stream = new Stream(convertIntoBinary(data));
             this.setHeaderInfo();
-            //this.setTracksInfo();
+            this.setTracksInfo();
         },
         setHeaderInfo: function () {
             var headerChunk = readChunk(this.stream);
@@ -42,8 +46,7 @@ var MidiFileReader;
         setTracksInfo: function() {
             var tracks = [];
             for (var i = 0; i < this.header.trackCount; i++) {
-                console.log(i);
-                tracks[i] = [];
+                tracks[i] = new (Class.CollectionOf(MidiEvent).create())();
                 var trackChunk = readChunk(this.stream);
                 if (trackChunk.id !== 'MTrk') {
                     throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
@@ -51,13 +54,14 @@ var MidiFileReader;
                 var trackStream = new Stream(trackChunk.data);
                 while (!trackStream.eof()) {
                     var event = this.readEvent(trackStream);
-                    tracks[i].push(event);
+                    tracks[i].add(event);
                 }
             }
+            this.tracks = tracks;
         },
 
         readEvent: function(stream) {
-            var event = {};
+            var event = new MidiEvent();
             event.deltaTime = stream.readVarInt();
             var eventTypeByte = stream.readInt8();
             if ((eventTypeByte & 0xf0) === 0xf0) {
