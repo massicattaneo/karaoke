@@ -4,7 +4,7 @@ describe('FILE READER', function() {
     var reader;
 
     beforeEach(function () {
-        reader = new MidiFileReader(gymnopedie);
+        reader = new MidiFile(gymnopedie);
     });
 
     describe("On reading a File", function () {

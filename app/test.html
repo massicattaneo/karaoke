@@ -4,58 +4,45 @@
     <meta charset="UTF-8">
     <title>Test load</title>
     <script src="../bower_components/core/build/core.min.js"></script>
-    <script src="js/Stream.js"></script>
-    <script src="js/MidiFileReader.js"></script>
-    <script src="js/sounds.js"></script>
+    <script src="js/MidiFile.js"></script>
+    <script src="js/Note.js"></script>
+    <script src="js/StreamReader.js"></script>
+    <script src="js/Loader.js"></script>
+    <script src="js/Sampler.js"></script>
 </head>
 <body>
     <script>
-        var promises = new Promises();
-        var file;
 
-        function loadRemote(path) {
-            var promise = new Promise();
-            promises.add(promise);
-            var fetch = new XMLHttpRequest();
-            fetch.open('GET', path);
-            fetch.overrideMimeType("text/plain; charset=x-user-defined");
-            fetch.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    /* munge response into a binary string */
-                    var t = this.responseText || "";
-                    var ff = [];
-                    var mx = t.length;
-                    var scc = String.fromCharCode;
-                    for (var z = 0; z < mx; z++) {
-                        ff[z] = scc(t.charCodeAt(z) & 255);
-                    }
-                    file = new MidiFileReader(ff.join(""));
-                    promise.resolve();
-                }
-            };
-            fetch.send();
-            return promise;
-        }
+        var promises = new Promises(2);
+        var p1 = MidiFile.load('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid'),
+                p2 = Instruments.library.load(['piano']);
 
-        var p = loadRemote('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid');
-        promises.onDone(function() {
-            console.log(file.header);
-//            for (var t in file.tracks) {
-//                document.write('track: ' + t + '<br/>');
-//                for (var ch=1; ch<=16; ch++) {
-//                    document.write('channel: ' + ch + '<br/>');
-//                    var notes = file.tracks[t].getCollection('channel', ch);
-//                    notes.each(function(i, k, o) {
-//                        document.write(JSON.stringify(o) + '<br/> ')
-//                    });
-//                }
-//            }
+        promises.add(p1);
+        promises.add(p2);
 
-
-
+        promises.onDone(function (midiFile, samplesLibrary) {
+            console.log(midiFile.header);
+            playSound(samplesLibrary.get('piano').get(0), 0);
+            var playTime = 0;
+            var track2 = midiFile.getTrack(2);
+            var pianoSamples = samplesLibrary.get('piano');
+            var ticksPerBeat = midiFile.header.ticksPerBeat;
+            track2.getNotesOn().each(function (index, key, note) {
+                playTime = playTime + 1 + note.deltaTime / ticksPerBeat;
+                playSound(pianoSamples.get(note.noteNumber - 12), playTime, 11, note.velocity / 127);
+            });
         });
 
-
+        function playSound(audioSample, startTime, length, gain) {
+            var source = audioContext.createBufferSource();
+            var gainNode = audioContext.createGain();
+            gainNode.gain.value = gain || 1;
+            source.buffer = audioSample.buffer;
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            source.start(startTime);
+            if (length) source.stop(startTime + length);
+        }
 
     </script>
 </body>

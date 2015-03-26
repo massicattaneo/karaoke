@@ -1,4 +1,4 @@
-var MidiFileReader, MidiEvent;
+var MidiFile, MidiEvent, Track;
 
 (function () {
 
@@ -18,13 +18,18 @@ var MidiFileReader, MidiEvent;
         return {'id': id, 'length': length, 'data': data};
     };
 
-    MidiEvent = Class.create({
+    MidiEvent = Class.create();
 
+    Track = Class.CollectionOf(MidiEvent).create({
+        getNotesOn: function () {
+            return this.getCollection('subtype', 'noteOn');
+        }
     });
 
-    MidiFileReader = Class.create({
+    MidiFile = Class.CollectionOf(Track).create({
         constructor: function(data) {
-            this.stream = new Stream(convertIntoBinary(data));
+            this.super();
+            this.stream = new StreamReader(convertIntoBinary(data));
             this.setHeaderInfo();
             this.setTracksInfo();
         },
@@ -33,7 +38,7 @@ var MidiFileReader, MidiEvent;
             if (headerChunk.id !== 'MThd' || headerChunk.length !== 6) {
                 throw "Bad .mid file - header not found";
             }
-            var headerStream = new Stream(headerChunk.data);
+            var headerStream = new StreamReader(headerChunk.data);
             this.header = {};
             this.header.formatType = headerStream.readInt16();
             this.header.trackCount = headerStream.readInt16();
@@ -43,21 +48,22 @@ var MidiFileReader, MidiEvent;
             }
             this.header.ticksPerBeat = ticksPerBeat;
         },
+        getTrack: function (track) {
+            return this.get(track);
+        },
         setTracksInfo: function() {
-            var tracks = [];
             for (var i = 0; i < this.header.trackCount; i++) {
-                tracks[i] = new (Class.CollectionOf(MidiEvent).create())();
+                var track = this.new();
                 var trackChunk = readChunk(this.stream);
                 if (trackChunk.id !== 'MTrk') {
                     throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
                 }
-                var trackStream = new Stream(trackChunk.data);
+                var trackStream = new StreamReader(trackChunk.data);
                 while (!trackStream.eof()) {
                     var event = this.readEvent(trackStream);
-                    tracks[i].add(event);
+                    track.add(event);
                 }
             }
-            this.tracks = tracks;
         },
 
         readEvent: function(stream) {
@@ -249,6 +255,27 @@ var MidiFileReader, MidiEvent;
         }
     });
 
-
+    MidiFile.load = function (path) {
+        var promise = new Promise();
+        var fetch = new XMLHttpRequest();
+        fetch.open('GET', path);
+        fetch.overrideMimeType("text/plain; charset=x-user-defined");
+        fetch.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                /* munge response into a binary string */
+                var t = this.responseText || "";
+                var ff = [];
+                var mx = t.length;
+                var scc = String.fromCharCode;
+                for (var z = 0; z < mx; z++) {
+                    ff[z] = scc(t.charCodeAt(z) & 255);
+                }
+                var file = new MidiFile(ff.join(""));
+                promise.resolve(file);
+            }
+        };
+        fetch.send();
+        return promise;
+    }
 
 })();

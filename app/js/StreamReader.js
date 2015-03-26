@@ -1,7 +1,7 @@
-var Stream;
+var StreamReader;
 
 (function () {
-    Stream = Class.create({
+    StreamReader = Class.create({
         constructor: function(data) {
             this.data = data;
             this.position = 0;
