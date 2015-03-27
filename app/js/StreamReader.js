@@ -55,6 +55,12 @@ var StreamReader;
                 }
             }
         },
+        readChunk: function () {
+            var id = this.read(4);
+            var length = this.readInt32();
+            var data = this.read(length);
+            return {id: id, length: length, data: data};
+        },
         eof: function() {
             return this.position >= this.data.length;
         }
