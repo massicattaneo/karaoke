@@ -5,127 +5,50 @@ var MidiEventStreamReader;
         constructor: function (data) {
             this.super(data);
         },
-        readSystemMetaEvent: function (eventTypeByte, deltaTime) {
+        readSystemMetaEvent: function (eventTypeByte) {
             if (eventTypeByte === 0xff) {
-                /* meta event */
-                event.type = 'meta';
                 var subtypeByte = this.readInt8();
                 var length = this.readVarInt();
                 switch (subtypeByte) {
                     case 0x00:
-                        event.subtype = 'sequenceNumber';
-                        if (length !== 2) {
-                            throw "Expected length for sequenceNumber event is 2, got " + length;
-                        }
-                        event.number = this.readInt16();
-                        return event;
+                        return new MidiEvent.SequenceNumber(length, this.readInt16());
                     case 0x01:
-                        event.subtype = 'text';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.Text(this.read(length));
                     case 0x02:
-                        event.subtype = 'copyrightNotice';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.CopyrightNotice(this.read(length));
                     case 0x03:
-                        event.subtype = 'trackName';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.TrackName(this.read(length));
                     case 0x04:
-                        event.subtype = 'instrumentName';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.InstrumentName(this.read(length));
                     case 0x05:
-                        event.subtype = 'lyrics';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.Lyrics(this.read(length));
                     case 0x06:
-                        event.subtype = 'marker';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.Marker(this.read(length));
                     case 0x07:
-                        event.subtype = 'cuePoint';
-                        event.text = this.read(length);
-                        return event;
+                        return new MidiEvent.CuePoint(this.read(length));
                     case 0x20:
-                        event.subtype = 'midiChannelPrefix';
-                        if (length !== 1) {
-                            throw "Expected length for midiChannelPrefix event is 1, got " + length;
-                        }
-                        event.channel = this.readInt8();
-                        return event;
+                        return new MidiEvent.MidiChannelPrefix(length, this.readInt8());
                     case 0x2f:
-                        event.subtype = 'endOfTrack';
-                        if (length !== 0) {
-                            throw "Expected length for endOfTrack event is 0, got " + length;
-                        }
-                        return event;
+                        return new MidiEvent.EndOfTrack(length);
                     case 0x51:
-                        event.subtype = 'setTempo';
-                        if (length !== 3) {
-                            throw "Expected length for setTempo event is 3, got " + length;
-                        }
-                        event.microsecondsPerBeat = (
-                        (this.readInt8() << 16) +
-                        (this.readInt8() << 8) +
-                        this.readInt8()
-                        );
-                        return event;
+                        return new MidiEvent.SetTempo(length, (this.readInt8() << 16) + (this.readInt8() << 8) + this.readInt8());
                     case 0x54:
-                        event.subtype = 'smpteOffset';
-                        if (length !== 5) {
-                            throw "Expected length for smpteOffset event is 5, got " + length;
-                        }
-                        var hourByte = this.readInt8();
-                        event.frameRate = {
-                            0x00: 24, 0x20: 25, 0x40: 29, 0x60: 30
-                        }[hourByte & 0x60];
-                        event.hour = hourByte & 0x1f;
-                        event.min = this.readInt8();
-                        event.sec = this.readInt8();
-                        event.frame = this.readInt8();
-                        event.subframe = this.readInt8();
-                        return event;
+                        return new MidiEvent.SmpteOffset(length, this.readInt8(), this.readInt8(), this.readInt8(), this.readInt8(), this.readInt8());
                     case 0x58:
-                        event.subtype = 'timeSignature';
-                        if (length !== 4) {
-                            throw "Expected length for timeSignature event is 4, got " + length;
-                        }
-                        event.numerator = this.readInt8();
-                        event.denominator = Math.pow(2, this.readInt8());
-                        event.metronome = this.readInt8();
-                        event.thirtyseconds = this.readInt8();
-                        return event;
+                        return new MidiEvent.TimeSignature(length, this.readInt8(), Math.pow(2, this.readInt8()), this.readInt8(), this.readInt8());
                     case 0x59:
-                        event.subtype = 'keySignature';
-                        if (length !== 2) {
-                            throw "Expected length for keySignature event is 2, got " + length;
-                        }
-                        event.key = this.readInt8(true);
-                        event.scale = this.readInt8();
-                        return event;
+                        return new MidiEvent.KeySignature(length, this.readInt8(true), this.readInt8());
                     case 0x7f:
-                        event.subtype = 'sequencerSpecific';
-                        event.data = this.read(length);
-                        return event;
+                        return new MidiEvent.SequencerSpecific(this.read(length));
                     default:
-                        // console.log("Unrecognised meta event subtype: " + subtypeByte);
-                        event.subtype = 'unknown';
-                        event.data = this.read(length);
-                        return event;
+                        var unknown = new MidiEvent.Meta('unknown');
+                        unknown.data = this.read(length);
+                        return unknown;
                 }
-                event.data = this.read(length);
-                return event;
             } else if (eventTypeByte === 0xf0) {
-                event.type = 'sysEx';
-                var length1 = this.readVarInt();
-                event.data = this.read(length1);
-                return event;
+                return new MidiEvent.SysEx(this.read(this.readVarInt()));
             } else if (eventTypeByte === 0xf7) {
-                event.type = 'dividedSysEx';
-                var length2 = this.readVarInt();
-                event.data = this.read(length2);
-                return event;
+                return new MidiEvent.SysEx(this.read(this.readVarInt()));
             } else {
                 throw "Unrecognised MIDI event type byte: " + eventTypeByte;
             }
@@ -161,12 +84,11 @@ var MidiEventStreamReader;
             }
         },
         readEvent: function () {
-            //var event = new MidiEvent();
             var deltaTime = this.readVarInt();
             var eventTypeByte = this.readInt8();
 
             if ((eventTypeByte & 0xf0) === 0xf0) {
-                return this.readSystemMetaEvent(eventTypeByte, deltaTime);
+                return this.readSystemMetaEvent(eventTypeByte);
             }
             else {
                 return this.readChannelEvent(eventTypeByte, deltaTime);

@@ -16,7 +16,7 @@
     <script>
 
         var promises = new Promises(2);
-        var p1 = MidiFile.load('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid'),
+        var p1 = MidiFile.load('../songsLibrary/minute_waltz.mid'),
                 p2 = Instruments.library.load(['piano']);
 
         promises.add(p1);
@@ -30,7 +30,7 @@
             var pianoSamples = samplesLibrary.get('piano');
             var ticksPerBeat = midiFile.header.ticksPerBeat;
             track2.getNotesOn().each(function (index, key, note) {
-                playTime = playTime + 1 + note.deltaTime / ticksPerBeat;
+                playTime = playTime + 0.18 + note.deltaTime / ticksPerBeat;
                 playSound(pianoSamples.get(note.noteValue - 12), playTime, 11, note.velocity / 127);
             });
         });
