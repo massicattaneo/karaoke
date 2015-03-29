@@ -1,7 +1,14 @@
-﻿var Sampler;
-(function () {
+﻿packages
+    .create('utility', function() {
+        var AudioContext = window.AudioContext || window.webkitAudioContext || function () {};
+        this.audioContext = new AudioContext();
+    });
+
+packages
+    .imports('utility.audioContext')
+    .create('Sampler', function (audioContext) {
     var percentages = [0, 5.946, 12.246, 18.921, 25.992, 33.484, 41.421, 49.831, 58.740, 68.179, 78.180, 88.775, 100];
-    Sampler = Class.create({
+    this.Class = Class.create({
         constructor: function (audioSample) {
             this.channel1 = audioSample.getChannelData(0);
             this.channel2 = (audioSample.numberOfChannels() === 2) ? audioSample.getChannelData(1) : audioSample.getChannelData(0);
@@ -27,5 +34,4 @@
             return buffer;
         }
     });
-})();
-
+});

@@ -9,42 +9,36 @@
     <script src="js/Note.js"></script>
     <script src="js/StreamReader.js"></script>
     <script src="js/MidiEventStreamReader.js"></script>
-    <script src="js/Loader.js"></script>
+    <script src="js/Audio.js"></script>
     <script src="js/Sampler.js"></script>
 </head>
 <body>
     <script>
 
-        var promises = new Promises(2);
-        var p1 = MidiFile.load('../songsLibrary/minute_waltz.mid'),
-                p2 = Instruments.library.load(['piano']);
+        var library = packages.get('audio').library;
+        var midiFile = packages.get('MidiFile');
 
-        promises.add(p1);
-        promises.add(p2);
+        var loader = new Promises(2);
+        loader.add(midiFile.load('../songsLibrary/minute_waltz.mid'));
+        loader.add(library.load(['piano']));
 
-        promises.onDone(function (midiFile, samplesLibrary) {
-            console.log(midiFile.header);
-            playSound(samplesLibrary.get('piano').get(0), 0);
-            var playTime = 0;
-            var track2 = midiFile.getTrack(2);
-            var pianoSamples = samplesLibrary.get('piano');
-            var ticksPerBeat = midiFile.header.ticksPerBeat;
-            track2.getNotesOn().each(function (index, key, note) {
-                playTime = playTime + 0.18 + note.deltaTime / ticksPerBeat;
-                playSound(pianoSamples.get(note.noteValue - 12), playTime, 11, note.velocity / 127);
-            });
+        loader
+            .imports('audio.play')
+            .onDone(function (playAudio, midiFile, samplesLibrary) {
+                console.log(midiFile.header);
+                var playTime = 0;
+                var pianoSamples = samplesLibrary.get('piano');
+                var ticksPerBeat = midiFile.header.ticksPerBeat;
+
+                midiFile.getTrack(2).getNotesOn().each(function (index, key, note) {
+                    playTime = playTime + 0.18 + note.deltaTime / ticksPerBeat;
+                    playAudio(pianoSamples.get(note.noteValue - 12), playTime, 11, note.velocity / 127);
+                });
+
         });
 
-        function playSound(audioSample, startTime, length, gain) {
-            var source = audioContext.createBufferSource();
-            var gainNode = audioContext.createGain();
-            gainNode.gain.value = gain || 1;
-            source.buffer = audioSample.buffer;
-            source.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            source.start(startTime);
-            if (length) source.stop(startTime + length);
-        }
+
+
 
     </script>
 </body>

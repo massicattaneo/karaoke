@@ -1,7 +1,5 @@
-var StreamReader;
-
-(function () {
-    StreamReader = Class.create({
+packages.create('StreamReader', function() {
+    this.Class = Class.create({
         constructor: function(data) {
             this.data = data;
             this.position = 0;
@@ -14,18 +12,18 @@ var StreamReader;
         /* read a big-endian 32-bit integer */
         readInt32: function() {
             var result = (
-                (this.data.charCodeAt(this.position) << 24) +
-                (this.data.charCodeAt(this.position + 1) << 16) +
-                (this.data.charCodeAt(this.position + 2) << 8) +
-                this.data.charCodeAt(this.position + 3));
+            (this.data.charCodeAt(this.position) << 24) +
+            (this.data.charCodeAt(this.position + 1) << 16) +
+            (this.data.charCodeAt(this.position + 2) << 8) +
+            this.data.charCodeAt(this.position + 3));
             this.position += 4;
             return result;
         },
         /* read a big-endian 16-bit integer */
         readInt16: function() {
             var result = (
-                (this.data.charCodeAt(this.position) << 8) +
-                this.data.charCodeAt(this.position + 1));
+            (this.data.charCodeAt(this.position) << 8) +
+            this.data.charCodeAt(this.position + 1));
             this.position += 2;
             return result;
         },
@@ -65,4 +63,4 @@ var StreamReader;
             return this.position >= this.data.length;
         }
     });
-})();
+});

@@ -1,6 +1,6 @@
-var Note;
-
-(function () {
+packages
+    .imports('MidiEvent.Generic')
+    .create('Note', function (MidiEvent) {
 
     function getNoteOctave(fullName) {
         return parseInt(fullName.substr(1, 1), 10);
@@ -54,7 +54,7 @@ var Note;
     var notes = ["C", "", "D", "", "E", "F", "", "G", "", "A", "", "B"];
     var notesSharp = ["C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B"];
 
-    Note = Class.extend(MidiEvent).create({
+    this.Class = Class.extend(MidiEvent).create({
         constructor: function (/* absoluteValue(Number) || fullName(String) */numOrStr) {
             var fullName = detectArgumentType(numOrStr);
             this.octave = getNoteOctave(fullName);
@@ -66,4 +66,4 @@ var Note;
         }
     });
 
-})();
+});
