@@ -1,19 +1,10 @@
 packages
-    .imports('MidiEvent.Generic')
-    .imports('StreamReader.Class')
-    .imports('MidiEventStreamReader.Class')
-    .create('MidiFile', function (MidiEvent, StreamReader, MidiEventStreamReader) {
+    .imports('StreamReader')
+    .imports('Midi-EventStreamReader')
+    .imports('Midi-Track')
+    .create('Midi-File', function (StreamReader, MidiEventStreamReader, MidiTrack) {
 
-        var MidiFile = this;
-
-        var Track;
-        Track = Class.CollectionOf(MidiEvent).create({
-            getNotesOn: function () {
-                return this.getCollection('subtype', 'noteOn');
-            }
-        });
-
-        MidiFile.Class = Class.CollectionOf(Track).create({
+        var MidiFile = Class.CollectionOf(MidiTrack).create({
             constructor: function (binaryData) {
                 this.super();
                 this.stream = new StreamReader(binaryData);
@@ -53,7 +44,6 @@ packages
                 }
             }
         });
-
         MidiFile.load = function (path) {
 
             var promise = new Promise(),
@@ -69,7 +59,7 @@ packages
             httpRequest.overrideMimeType("text/plain; charset=x-user-defined");
             httpRequest.onreadystatechange = function () {
                 if (this.readyState === 4 && this.status === 200) {
-                    var file = new MidiFile.Class(convertToBinary(this.responseText));
+                    var file = new MidiFile(convertToBinary(this.responseText));
                     promise.resolve(file);
                 }
             };
@@ -77,5 +67,7 @@ packages
             httpRequest.send();
             return promise;
         };
+
+        return MidiFile;
 
 });

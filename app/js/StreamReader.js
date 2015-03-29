@@ -1,5 +1,6 @@
 packages.create('StreamReader', function() {
-    this.Class = Class.create({
+
+    var Reader = Class.create({
         constructor: function(data) {
             this.data = data;
             this.position = 0;
@@ -63,4 +64,7 @@ packages.create('StreamReader', function() {
             return this.position >= this.data.length;
         }
     });
+
+    return Reader;
+
 });

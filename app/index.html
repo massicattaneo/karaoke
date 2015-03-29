@@ -4,25 +4,29 @@
     <meta charset="UTF-8">
     <title>Test load</title>
     <script src="../bower_components/core/build/core.min.js"></script>
-    <script src="js/MidiEvent.js"></script>
-    <script src="js/MidiFile.js"></script>
-    <script src="js/Note.js"></script>
+    <script src="js/Audio/Context.js"></script>
+    <script src="js/Midi/Event.js"></script>
+    <script src="js/Midi/File.js"></script>
+    <script src="js/Midi/Note.js"></script>
+    <script src="js/Midi/Track.js"></script>
     <script src="js/StreamReader.js"></script>
-    <script src="js/MidiEventStreamReader.js"></script>
-    <script src="js/Audio.js"></script>
-    <script src="js/Sampler.js"></script>
+    <script src="js/Midi/EventStreamReader.js"></script>
+    <script src="js/Audio/LibrarySettings.js"></script>
+    <script src="js/Audio/Library.js"></script>
+    <script src="js/Audio/Sampler.js"></script>
+    <script src="js/Audio/Player.js"></script>
 </head>
 <body>
     <script>
-        var library = packages.get('audio').library;
-        var midiFile = packages.get('MidiFile');
+        var library = packages.getPackage('Audio-Library');
+        var midiFile = packages.getPackage('Midi-File');
 
         var loader = new Promises(2);
-        loader.add(midiFile.load('../songsLibrary/minute_waltz.mid'));
         loader.add(library.load(['piano']));
+        loader.add(midiFile.load('../songsLibrary/minute_waltz.mid'));
 
         loader
-            .imports('audio.play')
+            .imports('Audio-Player')
             .onDone(function (playAudio, midiFile, samplesLibrary) {
                 console.log(midiFile.header);
                 var playTime = 0;

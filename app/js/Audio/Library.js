@@ -1,10 +1,9 @@
 ﻿packages
-    .imports('utility.audioContext')
-    .imports('Sampler.Class')
-    .imports('Note.Class')
-    .create('audio', function (audioContext, Sampler, Note) {
-
-        var audio = this;
+    .imports('Audio-Context')
+    .imports('Audio-Sampler')
+    .imports('Midi-Note')
+    .imports('Audio-LibrarySettings')
+    .create('Audio-Library', function (audioContext, Sampler, MidiNote, settings) {
 
         var AudioSample = Class.create({
             constructor: function (noteValue, url) {
@@ -72,7 +71,7 @@
                 var self = this;
                 var instrument = this.instrument;
                 for (var i in instrument.sampleNames) {
-                    var noteValue = new Note(instrument.sampleNames[i]).value;
+                    var noteValue = new MidiNote(instrument.sampleNames[i]).value;
                     var sampleUrl = instrument.folder + instrument.sampleNames[i] + '.wav';
                     var sample = new AudioSample(noteValue, sampleUrl);
                     var promise = sample.load();
@@ -105,30 +104,16 @@
         });
 
         var InstrumentLibrary = Class.CollectionOf(AudioSamples).create();
-        var library = new InstrumentLibrary();
 
-        audio.info = {
-            piano: {
-                folder: "../soundsLibrary/StereoGrand/",
-                spectrum: {action: "fill"},
-                sampleNames: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'F4', 'C5s', 'G5s', 'C6']
-            },
-            drum: {
-                folder: "../soundsLibrary/DrumKit/",
-                spectrum: {action: "none"},
-                sampleNames: ['C0', /*Kick*/ 'C1', /*Snare*/ 'C2' /* HiHat */]
-            }
-        };
-
-        audio.library = {};
-
-        audio.library.load = function (instruments) {
+        var library = {};
+        library.load = function (instruments) {
+            var library = new InstrumentLibrary();
             var promises = new Promises(instruments.length),
                 loadPromise = new Promise();
 
             for (var index in instruments) {
                 var instrumentName = instruments[index];
-                var audioSamples = library.add(new AudioSamples(audio.info[instrumentName], instrumentName), instrumentName);
+                var audioSamples = library.add(new AudioSamples(settings[instrumentName], instrumentName), instrumentName);
                 promises.add(audioSamples.load());
             }
 
@@ -139,20 +124,5 @@
             return loadPromise;
         };
 
-        audio.play = function (audioSample, startTime, length, gain) {
-            var source = audioContext.createBufferSource();
-            var gainNode = audioContext.createGain();
-            gainNode.gain.value = gain || 1;
-            source.buffer = audioSample.buffer;
-            source.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            source.start(startTime);
-            if (length) source.stop(startTime + length);
-        }
-
+        return library;
     });
-
-(function () {
-
-
-})();

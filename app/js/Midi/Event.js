@@ -1,5 +1,5 @@
 packages
-    .create('MidiEvent', function () {
+    .create('Midi-Event', function () {
 
         this.Generic = Class.create({
             constructor: function () {

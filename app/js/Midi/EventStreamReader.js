@@ -1,9 +1,9 @@
 packages
-    .imports('StreamReader.Class')
-    .imports('MidiEvent')
-    .create('MidiEventStreamReader', function (StreamReader, MidiEvent) {
+    .imports('StreamReader')
+    .imports('Midi-Event')
+    .create('Midi-EventStreamReader', function (StreamReader, MidiEvent) {
 
-        this.Class = Class.extend(StreamReader).create({
+        var Reader = Class.extend(StreamReader).create({
             constructor: function (data) {
                 this.super(data);
             },
@@ -79,7 +79,7 @@ packages
                     case 0x0d:
                         return new MidiEvent.ChannelAfterTouch(deltaTime, channel, param1);
                     case 0x0e:
-                        return new MidiEvent.ChannelAfterTouch(deltaTime, channel, param1 + (this.readInt8() << 7));
+                        return new MidiEvent.PitchBend(deltaTime, channel, param1 + (this.readInt8() << 7));
                     default:
                         //throw "Unrecognised MIDI event type";
                         return new MidiEvent.Channel(deltaTime, channel);
@@ -97,5 +97,7 @@ packages
                 }
             }
         });
+
+        return Reader;
 
 });
