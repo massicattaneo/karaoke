@@ -2,118 +2,44 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <title>Test load</title>
     <script src="../bower_components/core/build/core.min.js"></script>
-    <script src="../jsmid/synth.js"></script>
-    <script src="../jsmid/stream.js"></script>
-    <script src="../jsmid/replayer.js"></script>
-    <script src="../jsmid/midifile.js"></script>
-    <script src="../jsmid/audio.js"></script>
-    <script src="js/soundLoader.js"></script>
-    <script src="js/sounds.js"></script>
-    <script src="js/newPitchShift.js"></script>
-    <title></title>
+    <script src="js/MidiEvent.js"></script>
+    <script src="js/MidiFile.js"></script>
+    <script src="js/Note.js"></script>
+    <script src="js/StreamReader.js"></script>
+    <script src="js/MidiEventStreamReader.js"></script>
+    <script src="js/Audio.js"></script>
+    <script src="js/Sampler.js"></script>
 </head>
 <body>
-<script>
-    sounds.loader(["piano"]);
+    <script>
 
-    var pianoBuffer;
+        var library = packages.get('audio').library;
+        var midiFile = packages.get('MidiFile');
 
-    var library = {};
+        var loader = new Promises(2);
+        loader.add(midiFile.load('../songsLibrary/minute_waltz.mid'));
+        loader.add(library.load(['piano']));
 
-    sounds.soundsReady = function () {
-        for (b in buffers) {
-            Instruments[bufferNames[b]] = {}
-            Instruments[bufferNames[b]].buffers = buffers[b];
-        }
+        loader
+            .imports('audio.play')
+            .onDone(function (playAudio, midiFile, samplesLibrary) {
+                console.log(midiFile.header);
+                var playTime = 0;
+                var pianoSamples = samplesLibrary.get('piano');
+                var ticksPerBeat = midiFile.header.ticksPerBeat;
 
-    };
+                midiFile.getTrack(2).getNotesOn().each(function (index, key, note) {
+                    playTime = playTime + 0.18 + note.deltaTime / ticksPerBeat;
+                    playAudio(pianoSamples.get(note.noteValue - 12), playTime, 11, note.velocity / 127);
+                });
 
-    function playSequence() {
-        // We'll start playing the rhythm 100 milliseconds from "now"
-        var startTime = sounds.audioContext.currentTime + 0.100;
-        var tempo = 90; // BPM (beats per minute)
-        var eighthNoteTime = (60 / tempo) / 2;
-        for (var bar = 0; bar < 16; bar++) {
-            var time = startTime + bar * 8 * eighthNoteTime;
-
-        }
-    }
-
-    function playSound(instrument, note, startTime, length, gain) {
-        var source = sounds.audioContext.createBufferSource();
-
-        var gainNode = sounds.audioContext.createGain();
+        });
 
 
-        var abs;
-        if (isNaN(note))
-            abs = new sounds.note(note).absVal;
-        else
-            abs = note;
-
-        gainNode.gain.value = gain || 1;
-        source.buffer = Instruments[instrument].buffers.bufferList[abs];
-        source.connect(gainNode);
-        gainNode.connect(sounds.audioContext.destination);
-
-        //startTime in seconds
-        source.start(startTime);
-        if (length) source.stop(startTime + length);
-    }
-
-    function loadRemote(path, callback) {
-        var fetch = new XMLHttpRequest();
-        fetch.open('GET', path);
-        fetch.overrideMimeType("text/plain; charset=x-user-defined");
-        fetch.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                /* munge response into a binary string */
-                var t = this.responseText || "";
-                var ff = [];
-                var mx = t.length;
-                var scc = String.fromCharCode;
-                for (var z = 0; z < mx; z++) {
-                    ff[z] = scc(t.charCodeAt(z) & 255);
-                }
-                callback(ff.join(""));
-            }
-        }
-        fetch.send();
-    }
 
 
-    function play() {
-        loadRemote('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid', function (data) {
-            midiFile = MidiFile(data);
-            synth = Synth(44100);
-            replayer = Replayer(midiFile, synth);
-            audio = AudioPlayer(replayer);
-//
-//            var track = 2;
-//            for (var index in midiFile.tracks[track]) {
-//                if (midiFile.tracks[track][index] && midiFile.tracks[track][index].subtype === 'noteOn') {
-//                    console.log(midiFile.tracks[track][index]);
-//                }
-//            }
-
-//            var delta = 0;
-//            for (var index = 0; index < 1000; index++) {
-//                for (var t in midiFile.tracks) {
-//                    if (midiFile.tracks[t][index] && midiFile.tracks[t][index].subtype === 'noteOn') {
-//                        var o = midiFile.tracks[t][index];
-//                        delta += parseInt(o.deltaTime / 100);
-//                        playSound('piano', o.noteNumber - 24, sounds.audioContext.currentTime + delta, 4, o.velocity / 127);
-//                    }
-//                }
-//            }
-        })
-    }
-
-</script>
-
-<input type="submit" value="go" onclick="play()"/>
-
+    </script>
 </body>
 </html>
