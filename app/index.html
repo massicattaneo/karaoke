@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <title>Test load</title>
     <script src="../bower_components/core/build/core.min.js"></script>
-    <script src="js/Audio/Context.js"></script>
     <script src="js/Midi/Event.js"></script>
-    <script src="js/Midi/File.js"></script>
     <script src="js/Midi/Note.js"></script>
     <script src="js/Midi/Track.js"></script>
     <script src="js/StreamReader.js"></script>
+    <script src="js/Midi/File.js"></script>
     <script src="js/Midi/EventStreamReader.js"></script>
     <script src="js/Audio/LibrarySettings.js"></script>
-    <script src="js/Audio/Library.js"></script>
     <script src="js/Audio/Sampler.js"></script>
     <script src="js/Audio/Player.js"></script>
+    <script src="js/Audio/Context.js"></script>
+    <script src="js/Audio/Library.js"></script>
 </head>
 <body>
     <script>
@@ -27,8 +27,8 @@
 
         loader
             .imports('Audio-Player')
-            .onDone(function (playAudio, midiFile, samplesLibrary) {
-                console.log(midiFile.header);
+                .onDone(function (playAudio, samplesLibrary, midiFile) {
+
                 var playTime = 0;
                 var pianoSamples = samplesLibrary.get('piano');
                 var ticksPerBeat = midiFile.header.ticksPerBeat;
