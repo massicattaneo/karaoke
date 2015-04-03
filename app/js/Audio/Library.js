@@ -23,20 +23,19 @@
                         request.response,
                         function (decodedSample) {
                             if (!decodedSample) {
-                                promise.unresolvable();
+                                promise.unresolvable('missing file response');
                                 return;
                             }
                             self.buffer = decodedSample;
                             promise.resolve(self);
                         },
                         function (error) {
-                            promise.unresolvable();
+                            promise.unresolvable(error);
                         }
                     );
                 };
                 request.onerror = function () {
-                    alert('BufferLoader: XHR error');
-                    promise.unresolvable();
+                    promise.unresolvable('BufferLoader: XHR error');
                 };
                 request.send();
                 return promise;

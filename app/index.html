@@ -4,40 +4,37 @@
     <meta charset="UTF-8">
     <title>Test load</title>
     <script src="../bower_components/core/build/core.min.js"></script>
-    <script src="js/Midi/Event.js"></script>
-    <script src="js/Midi/Note.js"></script>
+    <script src="js/Audio/Library.js"></script>
+    <script src="js/Midi/File.js"></script>
     <script src="js/Midi/Track.js"></script>
     <script src="js/StreamReader.js"></script>
-    <script src="js/Midi/File.js"></script>
+    <script src="js/Midi/Event.js"></script>
+    <script src="js/Midi/Note.js"></script>
+    <script src="js/Audio/Player.js"></script>
     <script src="js/Midi/EventStreamReader.js"></script>
     <script src="js/Audio/LibrarySettings.js"></script>
     <script src="js/Audio/Sampler.js"></script>
-    <script src="js/Audio/Player.js"></script>
     <script src="js/Audio/Context.js"></script>
-    <script src="js/Audio/Library.js"></script>
 </head>
 <body>
     <script>
-        var library = packages.getPackage('Audio-Library');
-        var midiFile = packages.getPackage('Midi-File');
+        var midiFile = packages.getPackage('Midi-File'),
+                library = packages.getPackage('Audio-Library'),
+                loader = new Promises();
 
-        var loader = new Promises(2);
         loader.add(library.load(['piano']));
         loader.add(midiFile.load('../songsLibrary/minute_waltz.mid'));
-
         loader
             .imports('Audio-Player')
                 .onDone(function (playAudio, samplesLibrary, midiFile) {
-
                 var playTime = 0;
                 var pianoSamples = samplesLibrary.get('piano');
                 var ticksPerBeat = midiFile.header.ticksPerBeat;
-
-                midiFile.getTrack(2).getNotesOn().each(function (index, key, note) {
+                    var track2 = midiFile.getTrack(2);
+                    track2.getNotesOn().each(function (index, key, note) {
                     playTime = playTime + 0.18 + note.deltaTime / ticksPerBeat;
                     playAudio(pianoSamples.get(note.noteValue - 12), playTime, 11, note.velocity / 127);
                 });
-
         });
 
     </script>

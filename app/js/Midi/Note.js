@@ -1,6 +1,6 @@
 packages
     .imports('Midi-Event')
-    .create('Midi-Note', function (MidiGenericEvent) {
+    .create('Midi-Note', function (MidiEvent) {
 
         function getNoteOctave(fullName) {
             return parseInt(fullName.substr(1, 1), 10);
@@ -54,7 +54,7 @@ packages
         var notes = ["C", "", "D", "", "E", "F", "", "G", "", "A", "", "B"];
         var notesSharp = ["C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B"];
 
-        var MidiNote = Class.extend(MidiGenericEvent.Generic).create({
+        var MidiNote = Class.extend(MidiEvent.Generic).create({
             constructor: function (/* absoluteValue(Number) || fullName(String) */numOrStr) {
                 var fullName = detectArgumentType(numOrStr);
                 this.octave = getNoteOctave(fullName);
