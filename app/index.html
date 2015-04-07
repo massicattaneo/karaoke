@@ -15,27 +15,53 @@
     <script src="js/Audio/LibrarySettings.js"></script>
     <script src="js/Audio/Sampler.js"></script>
     <script src="js/Audio/Context.js"></script>
+    <script src="js/Midi/Player.js"></script>
 </head>
 <body>
-    <script>
+
+<button onclick="play('../songsLibrary/chno0901.mid')">Notturno Chopin</button>
+<button onclick="play('../songsLibrary/deb_clai.mid')">Claire de lune Debussy</button>
+<button onclick="play('../songsLibrary/minute_waltz.mid')">Waltz Chopin</button>
+<button onclick="play('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid')">Gymnopedie Satie</button>
+
+<script>
+
+    play = function (fileName) {
         var midiFile = packages.getPackage('Midi-File'),
                 library = packages.getPackage('Audio-Library'),
                 loader = new Promises();
 
         loader.add(library.load(['piano']));
-        loader.add(midiFile.load('../songsLibrary/minute_waltz.mid'));
+        loader.add(midiFile.load(fileName));
         loader
-            .imports('Audio-Player')
-                .onDone(function (playAudio, samplesLibrary, midiFile) {
-                var playTime = 0;
-                var pianoSamples = samplesLibrary.get('piano');
-                var ticksPerBeat = midiFile.header.ticksPerBeat;
-                    var track2 = midiFile.getTrack(2);
-                    track2.getNotesOn().each(function (index, key, note) {
-                    playTime = playTime + 0.18 + note.deltaTime / ticksPerBeat;
-                    playAudio(pianoSamples.get(note.noteValue - 12), playTime, 11, note.velocity / 127);
+                .imports('Audio-Player')
+                .imports('Midi-Player')
+                .onDone(function (playAudio, MidiPlayer, samplesLibrary, midiFile) {
+                    var playTime = 10;
+                    var pianoSamples = samplesLibrary.get('piano');
+                    var ticksPerBeat = midiFile.header.ticksPerBeat;
+                    var midiPlayer = new MidiPlayer(midiFile);
+                    var nextEvent = null;
+                    var beatsPerMinute = 60;
+                    do {
+                        nextEvent = midiPlayer.readNextEvent();
+                        if (nextEvent) {
+                            if (nextEvent.event.subtype === 'setTempo') {
+                                beatsPerMinute = nextEvent.event.execute();
+                            }
+                            var beatsToNextEvent = nextEvent.ticksToEvent / ticksPerBeat;
+                            var secondsToNextEvent = beatsToNextEvent / (beatsPerMinute / 60);
+                            playTime = playTime + secondsToNextEvent;
+                            if (nextEvent.event.subtype === 'noteOn') {
+                                nextEvent.event.execute(playAudio, pianoSamples, playTime);
+                            }
+                        }
+                    } while (nextEvent);
                 });
-        });
+
+    }
+
+
 
     </script>
 </body>

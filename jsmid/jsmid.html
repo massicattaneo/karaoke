@@ -2,28 +2,12 @@
 <html>
 <head>
     <script src="../bower_components/core/build/core.min.js"></script>
-    <script src="../app/js/soundLoader.js"></script>
-    <script src="../app/js/sounds.js"></script>
-    <script src="../app/js/newPitchShift.js"></script>
     <script src="stream.js"></script>
     <script src="midifile.js"></script>
     <script src="replayer.js"></script>
     <script src="synth.js"></script>
     <script src="audio.js"></script>
     <script>
-        sounds.loader(["piano"]);
-
-        var pianoBuffer;
-
-        var library = {};
-
-        sounds.soundsReady = function () {
-            for (b in buffers) {
-                Instruments[bufferNames[b]] = {}
-                Instruments[bufferNames[b]].buffers = buffers[b];
-            }
-        };
-
 
         function loadRemote(path, callback) {
             var fetch = new XMLHttpRequest();
@@ -31,7 +15,6 @@
             fetch.overrideMimeType("text/plain; charset=x-user-defined");
             fetch.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log(this.responseText);
                     /* munge response into a binary string */
                     var t = this.responseText || "";
                     var ff = [];
@@ -49,6 +32,7 @@
 
         function play(file) {
             loadRemote(file, function (data) {
+                debugger;
                 midiFile = MidiFile(data);
                 synth = Synth(44100);
                 replayer = Replayer(midiFile, synth);

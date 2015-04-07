@@ -195,12 +195,12 @@ function MidiFile(data) {
         }
     }
 
-    stream = StreamReader(data);
+    stream = Stream(data);
     var headerChunk = readChunk(stream);
     if (headerChunk.id != 'MThd' || headerChunk.length != 6) {
         throw "Bad .mid file - header not found";
     }
-    var headerStream = StreamReader(headerChunk.data);
+    var headerStream = Stream(headerChunk.data);
     var formatType = headerStream.readInt16();
     var trackCount = headerStream.readInt16();
     var timeDivision = headerStream.readInt16();
@@ -223,7 +223,7 @@ function MidiFile(data) {
         if (trackChunk.id != 'MTrk') {
             throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
         }
-        var trackStream = StreamReader(trackChunk.data);
+        var trackStream = Stream(trackChunk.data);
         while (!trackStream.eof()) {
             var event = readEvent(trackStream);
             tracks[i].push(event);

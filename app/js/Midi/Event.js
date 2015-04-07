@@ -3,7 +3,9 @@ packages
 
         this.Generic = Class.create({
             constructor: function () {
-
+                this.deltaTime = 0;
+            },
+            execute: function () {
             }
         });
 
@@ -26,9 +28,12 @@ packages
 
         this.NoteOn = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, noteValue, velocity) {
-                this.super(deltaTime, channel, (velocity) ? 'noteOn' : 'noteOff');
+                this.super(deltaTime, channel, 'noteOn');
                 this.noteValue = noteValue;
                 this.velocity = velocity;
+            },
+            execute: function (audioPlayer, audioSamples, playTime) {
+                audioPlayer(audioSamples.get(this.noteValue - 24), playTime, 11, this.velocity / 127);
             }
         });
 
@@ -158,6 +163,9 @@ packages
                 this.super('setTempo');
                 this.checkLength(length, 3);
                 this.microsecondsPerBeat = microsecondsPerBeat;
+            },
+            execute: function () {
+                return parseFloat(60000000 / this.microsecondsPerBeat);
             }
         });
 

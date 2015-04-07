@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test load</title>
+    <script src="../bower_components/core/build/core.min.js"></script>
+    <script src="js/Audio/Library.js"></script>
+    <script src="js/Midi/File.js"></script>
+    <script src="js/Midi/Track.js"></script>
+    <script src="js/StreamReader.js"></script>
+    <script src="js/Midi/Event.js"></script>
+    <script src="js/Midi/Note.js"></script>
+    <script src="js/Audio/Player.js"></script>
+    <script src="js/Midi/EventStreamReader.js"></script>
+    <script src="js/Audio/LibrarySettings.js"></script>
+    <script src="js/Audio/Sampler.js"></script>
+    <script src="js/Audio/Context.js"></script>
+    <script src="js/Midi/Player.js"></script>
+</head>
+<body>
+<script>
+
+    var midiFile = packages.getPackage('Midi-File'),
+            library = packages.getPackage('Audio-Library'),
+            loader = new Promises();
+
+    loader.add(library.load(['piano']));
+    loader.add(midiFile.load('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid'));
+    loader
+            .imports('Audio-Player')
+            .imports('Midi-Player')
+            .onDone(function (playAudio, MidiPlayer, samplesLibrary, midiFile) {
+//                var playTime = 10;
+//                var pianoSamples = samplesLibrary.get('piano');
+//                var ticksPerBeat = midiFile.header.ticksPerBeat;
+//                var midiPlayer = new MidiPlayer(midiFile);
+//                var nextEvent = null;
+//                var beatsPerMinute = 60;
+
+                var channels = [];
+                midiFile.each(function (indexTrack, keyTrack, track) {
+                    track.each(function (index, key, event) {
+                        if (event.channel) {
+                            channels[indexTrack] = event.channel;
+                        }
+                    })
+                });
+                console.log(channels);
+
+//                do {
+//                    nextEvent = midiPlayer.readNextEvent();
+//                    if (nextEvent) {
+//                        if (nextEvent.event.subtype === 'setTempo') {
+//                            beatsPerMinute = nextEvent.event.execute();
+//                            console.log('tempo: ' + beatsPerMinute, nextEvent.event);
+//                        }
+//                        var beatsToNextEvent = nextEvent.ticksToEvent / ticksPerBeat;
+//                        var secondsToNextEvent = beatsToNextEvent / (beatsPerMinute / 60);
+//                        playTime = playTime + secondsToNextEvent;
+//                        if (nextEvent.event.subtype === 'noteOn') {
+//                            nextEvent.event.execute(playAudio, pianoSamples, playTime);
+//                        }
+//                    }
+//                } while(nextEvent);
+            });
+
+</script>
+</body>
+</html>

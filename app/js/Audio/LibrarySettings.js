@@ -5,7 +5,7 @@ packages
             piano: {
                 folder: "../soundsLibrary/StereoGrand/",
                 spectrum: {action: "fill"},
-                sampleNames: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'F4', 'C5s', 'G5s', 'C6']
+                sampleNames: ['C0', 'F0', 'C1', 'F1s', 'D2', 'F2', 'D3', 'F3', 'G3', 'C4', 'F4', 'C5s', 'G5s', 'C6', 'C7']
             },
             drum: {
                 folder: "../soundsLibrary/DrumKit/",

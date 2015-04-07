@@ -42,7 +42,8 @@ function AudioPlayer(generator, opts) {
                 requestStop = true;
             }
         }
-    } else if (webkitAudio) {
+    }
+    else if (webkitAudio) {
         // Uses Webkit Web Audio API if available
         var context = new webkitAudio();
         sampleRate = context.sampleRate;
@@ -85,7 +86,8 @@ function AudioPlayer(generator, opts) {
             'type': 'Webkit Audio'
         }
 
-    } else {
+    }
+    else {
         // Fall back to creating flash player
         var c = document.createElement('div');
         c.innerHTML = '<embed type="application/x-shockwave-flash" id="da-swf" src="da.swf" width="8" height="8" allowScriptAccess="always" style="position: fixed; left:-10px;" />';

@@ -69,7 +69,12 @@ packages
                     case 0x08:
                         return new MidiEvent.NoteOff(deltaTime, channel, param1, this.readInt8());
                     case 0x09:
-                        return new MidiEvent.NoteOn(deltaTime, channel, param1, this.readInt8());
+                        var velocity = this.readInt8();
+                        if (velocity) {
+                            return new MidiEvent.NoteOn(deltaTime, channel, param1, velocity);
+                        } else {
+                            return new MidiEvent.NoteOff(deltaTime, channel, param1, velocity);
+                        }
                     case 0x0a:
                         return new MidiEvent.NoteAftertouch(deltaTime, channel, param1, this.readInt8());
                     case 0x0b:

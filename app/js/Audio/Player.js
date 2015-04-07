@@ -11,7 +11,7 @@ packages
             gainNode.connect(audioContext.destination);
             source.start(startTime);
             if (length) source.stop(startTime + length);
-        }
+        };
 
         return player;
 

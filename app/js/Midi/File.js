@@ -31,17 +31,20 @@ packages
             },
             setTracksEvents: function () {
                 for (var i = 0; i < this.header.trackCount; i++) {
-                    var track = this.new();
                     var trackChunk = this.stream.readChunk();
 
                     if (trackChunk.id !== 'MTrk') {
                         throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
                     }
                     var midiEventsReader = new MidiEventStreamReader(trackChunk.data);
+                    var track = this.new();
                     while (!midiEventsReader.eof()) {
                         track.add(midiEventsReader.readEvent());
                     }
                 }
+            },
+            getEventData: function (trackIndex, eventIndex, attribute) {
+                return this.get(trackIndex).get(eventIndex)[attribute]
             }
         });
         MidiFile.load = function (path) {
