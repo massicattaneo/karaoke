@@ -139,6 +139,7 @@ function Replayer(midiFile, synth) {
             case 'meta':
                 switch (event.subtype) {
                     case 'setTempo':
+                        console.log(event);
                         beatsPerMinute = 60000000 / event.microsecondsPerBeat
                 }
                 break;

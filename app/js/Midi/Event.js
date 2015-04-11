@@ -4,6 +4,7 @@ packages
         this.Generic = Class.create({
             constructor: function () {
                 this.deltaTime = 0;
+                this.nextEvent = {};
             },
             execute: function () {
             }
@@ -11,7 +12,7 @@ packages
 
         this.Channel = Class.extend(this.Generic).create({
             constructor: function (deltaTime, channel, subtype) {
-                this.deltaTime = deltaTime;
+                this.deltaTime = deltaTime || 0;
                 this.type = 'channel';
                 this.channel = channel;
                 this.subtype = subtype;
@@ -75,7 +76,8 @@ packages
         });
 
         this.Meta = Class.extend(this.Generic).create({
-            constructor: function (subtype) {
+            constructor: function (subtype, deltaTime) {
+                this.deltaTime = deltaTime || 0;
                 this.type = 'meta';
                 this.subtype = subtype;
             },
@@ -87,80 +89,80 @@ packages
         });
 
         this.SequenceNumber = Class.extend(this.Meta).create({
-            constructor: function (length, number) {
+            constructor: function (deltaTime, length, number) {
                 this.checkLength(length, 2);
-                this.super('sequenceNumber');
+                this.super('sequenceNumber', deltaTime);
                 this.number = number;
             }
         });
 
         this.Text = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('text');
+            constructor: function (deltaTime, text) {
+                this.super('text', deltaTime);
                 this.text = text;
             }
         });
 
         this.CopyrightNotice = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('copyrightNotice');
+            constructor: function (deltaTime, text) {
+                this.super('copyrightNotice', deltaTime);
                 this.text = text;
             }
         });
 
         this.TrackName = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('trackName');
+            constructor: function (deltaTime, text) {
+                this.super('trackName', deltaTime);
                 this.text = text;
             }
         });
 
         this.InstrumentName = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('instrumentName');
+            constructor: function (deltaTime, text) {
+                this.super('instrumentName', deltaTime);
                 this.text = text;
             }
         });
 
         this.Lyrics = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('lyrics');
+            constructor: function (deltaTime, text) {
+                this.super('lyrics', deltaTime);
                 this.text = text;
             }
         });
 
         this.Marker = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('marker');
+            constructor: function (deltaTime, text) {
+                this.super('marker', deltaTime);
                 this.text = text;
             }
         });
 
         this.CuePoint = Class.extend(this.Meta).create({
-            constructor: function (text) {
-                this.super('cuePoint');
+            constructor: function (deltaTime, text) {
+                this.super('cuePoint', deltaTime);
                 this.text = text;
             }
         });
 
         this.MidiChannelPrefix = Class.extend(this.Meta).create({
-            constructor: function (length, channel) {
-                this.super('midiChannelPrefix');
+            constructor: function (deltaTime, length, channel) {
+                this.super('midiChannelPrefix', deltaTime);
                 this.checkLength(length, 1);
                 this.channel = channel;
             }
         });
 
         this.EndOfTrack = Class.extend(this.Meta).create({
-            constructor: function (length) {
-                this.super('endOfTrack');
+            constructor: function (deltaTime, length) {
+                this.super('endOfTrack', deltaTime);
                 this.checkLength(length, 0);
             }
         });
 
         this.SetTempo = Class.extend(this.Meta).create({
-            constructor: function (length, microsecondsPerBeat) {
-                this.super('setTempo');
+            constructor: function (deltaTime, length, microsecondsPerBeat) {
+                this.super('setTempo', deltaTime);
                 this.checkLength(length, 3);
                 this.microsecondsPerBeat = microsecondsPerBeat;
             },
@@ -170,8 +172,8 @@ packages
         });
 
         this.SmpteOffset = Class.extend(this.Meta).create({
-            constructor: function (length, hourByte, minutes, seconds, frame, subframe) {
-                this.super('smpteOffset');
+            constructor: function (deltaTime, length, hourByte, minutes, seconds, frame, subframe) {
+                this.super('smpteOffset', deltaTime);
                 this.checkLength(length, 5);
                 this.frameRate = {
                     0x00: 24, 0x20: 25, 0x40: 29, 0x60: 30
@@ -185,8 +187,8 @@ packages
         });
 
         this.TimeSignature = Class.extend(this.Meta).create({
-            constructor: function (length, numerator, denominator, metronome, thirtyseconds) {
-                this.super('timeSignature');
+            constructor: function (deltaTime, length, numerator, denominator, metronome, thirtyseconds) {
+                this.super('timeSignature', deltaTime);
                 this.checkLength(length, 4);
                 this.numerator = numerator;
                 this.denominator = denominator;
@@ -196,8 +198,8 @@ packages
         });
 
         this.KeySignature = Class.extend(this.Meta).create({
-            constructor: function (length, key, scale) {
-                this.super('keySignature');
+            constructor: function (deltaTime, length, key, scale) {
+                this.super('keySignature', deltaTime);
                 this.checkLength(length, 2);
                 this.key = key;
                 this.scale = scale;
@@ -205,21 +207,23 @@ packages
         });
 
         this.SequencerSpecific = Class.extend(this.Meta).create({
-            constructor: function (data) {
-                this.super('sequencerSpecific');
+            constructor: function (deltaTime, data) {
+                this.super('sequencerSpecific', deltaTime);
                 this.data = data;
             }
         });
 
         this.SysEx = Class.extend(this.Generic).create({
-            constructor: function (data) {
+            constructor: function (deltaTime, data) {
+                this.deltaTime = deltaTime || 0;
                 this.type = 'sysEx';
                 this.data = data;
             }
         });
 
         this.DividedSysEx = Class.extend(this.Generic).create({
-            constructor: function (data) {
+            constructor: function (deltaTime, data) {
+                this.deltaTime = deltaTime || 0;
                 this.type = 'dividedSysEx';
                 this.data = data;
             }

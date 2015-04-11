@@ -32,7 +32,6 @@
 
         function play(file) {
             loadRemote(file, function (data) {
-                debugger;
                 midiFile = MidiFile(data);
                 synth = Synth(44100);
                 replayer = Replayer(midiFile, synth);

@@ -34,29 +34,54 @@
         loader.add(library.load(['piano']));
         loader.add(midiFile.load(fileName));
         loader
+                .imports('Audio-Context')
                 .imports('Audio-Player')
                 .imports('Midi-Player')
-                .onDone(function (playAudio, MidiPlayer, samplesLibrary, midiFile) {
+                .onDone(function (audioContext, playAudio, MidiPlayer, samplesLibrary, midiFile) {
                     var playTime = 10;
                     var pianoSamples = samplesLibrary.get('piano');
                     var ticksPerBeat = midiFile.header.ticksPerBeat;
-                    var midiPlayer = new MidiPlayer(midiFile);
+                    var midiPlayer = new MidiPlayer(midiFile, samplesLibrary);
                     var nextEvent = null;
                     var beatsPerMinute = 60;
-                    do {
-                        nextEvent = midiPlayer.readNextEvent();
-                        if (nextEvent) {
-                            if (nextEvent.event.subtype === 'setTempo') {
-                                beatsPerMinute = nextEvent.event.execute();
-                            }
-                            var beatsToNextEvent = nextEvent.ticksToEvent / ticksPerBeat;
-                            var secondsToNextEvent = beatsToNextEvent / (beatsPerMinute / 60);
-                            playTime = playTime + secondsToNextEvent;
-                            if (nextEvent.event.subtype === 'noteOn') {
-                                nextEvent.event.execute(playAudio, pianoSamples, playTime);
-                            }
-                        }
-                    } while (nextEvent);
+
+                    var scriptNode = audioContext.createScriptProcessor(4096 * 2, 0, 2);
+                    scriptNode.onaudioprocess = function (audioEvent) {
+                        var outputBuffer = audioEvent.outputBuffer;
+                        var temp = midiPlayer.generateAudioSample(4096 * 2);
+                        outputBuffer.getChannelData(0).set(temp.left, 0, 0);
+                        outputBuffer.getChannelData(1).set(temp.right, 0, 0);
+                    }
+                    scriptNode.connect(audioContext.destination);
+
+//                    for (var i=0; i<11; i++) {
+//                        console.log('---------------------------');
+//                        midiPlayer.generateAudioSample(4096);
+//                        console.log(midiPlayer.samplePosition);
+//                        midiPlayer.each(function(i,k,e){
+//                            console.log(k, e);
+//                        });
+//                    }
+
+
+//                        source.disconnect(scriptNode);
+//                        scriptNode.disconnect(audioCtx.destination);
+
+                    /*PLAY*/
+//                    do {
+//                        nextEvent = midiPlayer.readNextEvent();
+//                        if (nextEvent) {
+//                            if (nextEvent.event.subtype === 'setTempo') {
+//                                beatsPerMinute = nextEvent.event.execute();
+//                            }
+//                            var beatsToNextEvent = nextEvent.ticksToEvent / ticksPerBeat;
+//                            var secondsToNextEvent = beatsToNextEvent / (beatsPerMinute / 60);
+//                            playTime = playTime + secondsToNextEvent;
+//                            if (nextEvent.event.subtype === 'noteOn') {
+//                                nextEvent.event.execute(playAudio, pianoSamples, playTime);
+//                            }
+//                        }
+//                    } while (nextEvent);
                 });
 
     }
