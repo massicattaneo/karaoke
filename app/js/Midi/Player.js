@@ -25,7 +25,7 @@ packages
             }
         });
 
-        var MidiPlayer = Class.CollectionOf(MidiEvent).create({
+        var MidiPlayer = Class.CollectionOf(MidiEvent.Generic).create({
             constructor: function (midiFile, samplesLibrary) {
                 this.super();
                 var self = this;
@@ -38,8 +38,10 @@ packages
                 this.midiFile = midiFile;
                 this.ticksPerBeat = midiFile.header.ticksPerBeat;
                 this.samplePosition = 0;
-                this.beatsPerMinute = 1;
+                this.relativePosition = 0;
+                this.beatsPerMinute = 60;
                 this.samplesLibrary = samplesLibrary;
+                this.p = 0;
             },
             addState: function (state, key) {
                 this.states.add(state, key);
@@ -87,49 +89,49 @@ packages
                     'track': nextEventTrack
                 }
             },
-            readAndStore: function (samplesToRead) {
+            handleNextEvent: function (nextEvent) {
                 var samplesToNextEvent = 0;
-                var init = this.samplePosition;
-                do {
-                    var nextEvent = this.readNextEvent();
-                    if (nextEvent) {
-                        nextEvent.event.samplePosition = this.samplePosition;
-                        if (nextEvent.event.subtype === 'setTempo') {
-                            this.beatsPerMinute = parseFloat(60000000 / nextEvent.event.microsecondsPerBeat);
-                        } else if (nextEvent.event.subtype === 'noteOn' || nextEvent.event.subtype === 'noteOff') {
-                            this.add(nextEvent.event, nextEvent.event.noteValue);
-                        }
-                        var beatsToNextEvent = nextEvent.ticksToEvent / this.ticksPerBeat;
-                        var secondsToNextEvent = beatsToNextEvent / (this.beatsPerMinute / 60);
 
-                        samplesToNextEvent += (secondsToNextEvent * 44100);
-                        this.samplePosition += parseInt(samplesToNextEvent, 10);
+                if (nextEvent) {
+
+                    if (nextEvent.event.subtype === 'setTempo') {
+                        this.beatsPerMinute = parseFloat(60000000 / nextEvent.event.microsecondsPerBeat);
+                    } else if (nextEvent.event.subtype === 'noteOn' || nextEvent.event.subtype === 'noteOff') {
+                        this.add(nextEvent.event, nextEvent.event.noteValue);
                     }
-                } while (samplesToRead > samplesToNextEvent);
-                this.samplePosition = init + samplesToRead;
+
+                    var beatsToNextEvent = nextEvent.ticksToEvent / this.ticksPerBeat;
+                    var secondsToNextEvent = beatsToNextEvent / (this.beatsPerMinute / 60);
+
+                    samplesToNextEvent += (secondsToNextEvent * 44100);
+                    this.samplePosition += parseInt(samplesToNextEvent, 10);
+                    nextEvent.event.samplePosition = this.samplePosition;
+                }
             },
             generateAudioSample: function (samplesToRead) {
                 var pianoSamples = this.samplesLibrary.get('piano');
                 var left = new Float32Array(samplesToRead);
                 var right = new Float32Array(samplesToRead);
-                var startPosition = this.samplePosition - samplesToRead;
 
-                this.readAndStore(samplesToRead);
+                do {
+                    this.handleNextEvent(this.readNextEvent());
+                } while (this.samplePosition < (samplesToRead + this.relativePosition));
 
-                for (var i = 0; i < samplesToRead; i++) {
-                    this.each(function (index, noteValue, event) {
-                        if (event.subtype === 'noteOff') {
-                            this.remove(noteValue);
-                        } else if (event.subtype === 'noteOn' && event.samplePosition <= (startPosition + i)) {
-                            var buffer = pianoSamples.get(noteValue - 24).buffer;
-                            left[i] += buffer.getChannelData(0)[startPosition - event.samplePosition + i];
-                            right[i] += buffer.getChannelData(1)[startPosition - event.samplePosition + i];
-                        }
-                    });
-                }
+                this.each(function (index, noteValue, event) {
+                    if (event.subtype === 'noteOff') {
+                        this.remove(noteValue);
+                    }
+                    else if (event.subtype === 'noteOn') {
 
-                return {left: left, right: right};
+
+                    }
+                });
+
+                this.relativePosition += samplesToRead;
+                return {left: left, right: right}
+
             }
         });
+
         return MidiPlayer;
     });

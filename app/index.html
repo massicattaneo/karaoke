@@ -45,27 +45,29 @@
                     var nextEvent = null;
                     var beatsPerMinute = 60;
 
-                    var scriptNode = audioContext.createScriptProcessor(4096 * 2, 0, 2);
+                    do {
+                        nextEvent = midiPlayer.readNextEvent()
+                        midiPlayer.handleNextEvent(nextEvent);
+                    } while (nextEvent);
+                    console.log('finish');
+
+                    var scriptNode = audioContext.createScriptProcessor(2048, 0, 2);
                     scriptNode.onaudioprocess = function (audioEvent) {
                         var outputBuffer = audioEvent.outputBuffer;
-                        var temp = midiPlayer.generateAudioSample(4096 * 2);
+                        var temp = midiPlayer.generateAudioSample(2048);
                         outputBuffer.getChannelData(0).set(temp.left, 0, 0);
                         outputBuffer.getChannelData(1).set(temp.right, 0, 0);
                     }
                     scriptNode.connect(audioContext.destination);
 
-//                    for (var i=0; i<11; i++) {
-//                        console.log('---------------------------');
-//                        midiPlayer.generateAudioSample(4096);
-//                        console.log(midiPlayer.samplePosition);
-//                        midiPlayer.each(function(i,k,e){
-//                            console.log(k, e);
-//                        });
-//                    }
-
-
-//                        source.disconnect(scriptNode);
-//                        scriptNode.disconnect(audioCtx.destination);
+//                    var source = audioContext.createBufferSource();
+//                    var temp = midiPlayer.generateAudioSample(345096);
+//                    var buffer = audioContext.createBuffer(2, 345096, 44100);
+//                    buffer.getChannelData(0).set(temp.left, 0, 0);
+//                    buffer.getChannelData(1).set(temp.right, 0, 0);
+//                    source.buffer = buffer;
+//                    source.connect(audioContext.destination);
+//                    source.start();
 
                     /*PLAY*/
 //                    do {
