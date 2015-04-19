@@ -45,16 +45,10 @@
                     var nextEvent = null;
                     var beatsPerMinute = 60;
 
-                    do {
-                        nextEvent = midiPlayer.readNextEvent()
-                        midiPlayer.handleNextEvent(nextEvent);
-                    } while (nextEvent);
-                    console.log('finish');
-
-                    var scriptNode = audioContext.createScriptProcessor(2048, 0, 2);
+                    var scriptNode = audioContext.createScriptProcessor(2048*8, 0, 2);
                     scriptNode.onaudioprocess = function (audioEvent) {
                         var outputBuffer = audioEvent.outputBuffer;
-                        var temp = midiPlayer.generateAudioSample(2048);
+                        var temp = midiPlayer.generateAudioSample(2048*8);
                         outputBuffer.getChannelData(0).set(temp.left, 0, 0);
                         outputBuffer.getChannelData(1).set(temp.right, 0, 0);
                     }

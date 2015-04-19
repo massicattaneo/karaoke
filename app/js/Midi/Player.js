@@ -117,13 +117,15 @@ packages
                     this.handleNextEvent(this.readNextEvent());
                 } while (this.samplePosition < (samplesToRead + this.relativePosition));
 
+                var pos = 0;
                 this.each(function (index, noteValue, event) {
-                    if (event.subtype === 'noteOff') {
-                        this.remove(noteValue);
-                    }
-                    else if (event.subtype === 'noteOn') {
-
-
+                    if (event.samplePosition >= (pos + this.relativePosition)) {
+                        for (var i=pos; i<samplesToRead; i++) {
+                            left[i] += pianoSamples.get(noteValue-24).buffer.getChannelData(0)[event.samplePosition - this.relativePosition + pos]
+                            right[i] += pianoSamples.get(noteValue-24).buffer.getChannelData(1)[event.samplePosition - this.relativePosition + pos]
+                        }
+                    } else {
+                        pos = event.samplePosition - this.relativePosition;
                     }
                 });
 
