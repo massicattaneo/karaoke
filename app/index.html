@@ -23,6 +23,8 @@
 <button onclick="play('../songsLibrary/deb_clai.mid')">Claire de lune Debussy</button>
 <button onclick="play('../songsLibrary/minute_waltz.mid')">Waltz Chopin</button>
 <button onclick="play('../songsLibrary/Gymnopedie_No_1_David_Cooke-gymnop01.mid')">Gymnopedie Satie</button>
+<br/><br/>
+Completed: <input type="range" id="completed" min="0" max="100" value="0"/>
 
 <script>
 
@@ -45,29 +47,48 @@
                     var nextEvent = null;
                     var beatsPerMinute = 60;
 
-                    do {
-                        nextEvent = midiPlayer.readNextEvent()
-                        midiPlayer.handleNextEvent(nextEvent);
-                    } while (nextEvent);
-                    console.log('finish');
+//                    do {
+//                        nextEvent = midiPlayer.readNextEvent()
+//                        midiPlayer.handleNextEvent(nextEvent);
+//                    } while (nextEvent);
+//                    console.log('finish');
 
-                    var scriptNode = audioContext.createScriptProcessor(2048, 0, 2);
-                    scriptNode.onaudioprocess = function (audioEvent) {
-                        var outputBuffer = audioEvent.outputBuffer;
-                        var temp = midiPlayer.generateAudioSample(2048);
-                        outputBuffer.getChannelData(0).set(temp.left, 0, 0);
-                        outputBuffer.getChannelData(1).set(temp.right, 0, 0);
-                    }
-                    scriptNode.connect(audioContext.destination);
+//                    var scriptNode = audioContext.createScriptProcessor(2048, 0, 2);
+//                    scriptNode.onaudioprocess = function (audioEvent) {
+//                        var outputBuffer = audioEvent.outputBuffer;
+//                        var temp = midiPlayer.generateAudioSample(2048);
+//                        outputBuffer.getChannelData(0).set(temp.left, 0, 0);
+//                        outputBuffer.getChannelData(1).set(temp.right, 0, 0);
+//                    }
+//                    scriptNode.connect(audioContext.destination);
 
-//                    var source = audioContext.createBufferSource();
-//                    var temp = midiPlayer.generateAudioSample(345096);
-//                    var buffer = audioContext.createBuffer(2, 345096, 44100);
-//                    buffer.getChannelData(0).set(temp.left, 0, 0);
-//                    buffer.getChannelData(1).set(temp.right, 0, 0);
-//                    source.buffer = buffer;
-//                    source.connect(audioContext.destination);
-//                    source.start();
+
+                    var length = midiPlayer.generateNoteonEvents();
+                    console.log(length);
+                    var left = new Float32Array(length);
+                    var right = new Float32Array(length);
+                    midiPlayer.each(function (index, noteValue, event) {
+                        document.getElementById('completed').value = parseInt(midiPlayer.size() * 100 / index, 10);
+                        var buffer = pianoSamples.get(noteValue - 24).buffer;
+                        if (event.subtype === 'noteOn') {
+                            var start = event.samplePosition;
+                            var end = event.sampleEnd;
+                            for (var i = 0; i < (end - start); i++) {
+                                left[start + i] += buffer.getChannelData(0)[i];
+                                right[start + i] += buffer.getChannelData(1)[i];
+                            }
+                        }
+                    });
+
+                    console.log('start');
+
+                    var source = audioContext.createBufferSource();
+                    var buffer = audioContext.createBuffer(2, length, 44100);
+                    buffer.getChannelData(0).set(left, 0, 0);
+                    buffer.getChannelData(1).set(right, 0, 0);
+                    source.buffer = buffer;
+                    source.connect(audioContext.destination);
+                    source.start();
 
                     /*PLAY*/
 //                    do {
