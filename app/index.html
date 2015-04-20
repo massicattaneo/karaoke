@@ -66,6 +66,7 @@ Completed: <input type="range" id="completed" min="0" max="100" value="0"/>
                     var length = midiPlayer.generateNoteonEvents();
                     console.log(length);
                     var left = new Float32Array(length);
+
                     var right = new Float32Array(length);
                     midiPlayer.each(function (index, noteValue, event) {
                         document.getElementById('completed').value = parseInt(midiPlayer.size() * 100 / index, 10);
