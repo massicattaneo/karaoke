@@ -65,31 +65,31 @@ Completed: <input type="range" id="completed" min="0" max="100" value="0"/>
 
                     var length = midiPlayer.generateNoteonEvents();
                     console.log(length);
-                    var left = new Float32Array(length);
-
-                    var right = new Float32Array(length);
-                    midiPlayer.each(function (index, noteValue, event) {
-                        document.getElementById('completed').value = parseInt(midiPlayer.size() * 100 / index, 10);
-                        var buffer = pianoSamples.get(noteValue - 24).buffer;
-                        if (event.subtype === 'noteOn') {
-                            var start = event.samplePosition;
-                            var end = event.sampleEnd;
-                            for (var i = 0; i < (end - start); i++) {
-                                left[start + i] += buffer.getChannelData(0)[i];
-                                right[start + i] += buffer.getChannelData(1)[i];
-                            }
-                        }
-                    });
-
-                    console.log('start');
-
-                    var source = audioContext.createBufferSource();
-                    var buffer = audioContext.createBuffer(2, length, 44100);
-                    buffer.getChannelData(0).set(left, 0, 0);
-                    buffer.getChannelData(1).set(right, 0, 0);
-                    source.buffer = buffer;
-                    source.connect(audioContext.destination);
-                    source.start();
+//                    var left = new Float32Array(length);
+//
+//                    var right = new Float32Array(length);
+//                    midiPlayer.each(function (index, noteValue, event) {
+//                        document.getElementById('completed').value = parseInt(midiPlayer.size() * 100 / index, 10);
+//                        var buffer = pianoSamples.get(noteValue - 24).buffer;
+//                        if (event.subtype === 'noteOn') {
+//                            var start = event.samplePosition;
+//                            var end = event.sampleEnd;
+//                            for (var i = 0; i < (end - start); i++) {
+//                                left[start + i] += buffer.getChannelData(0)[i];
+//                                right[start + i] += buffer.getChannelData(1)[i];
+//                            }
+//                        }
+//                    });
+//
+//                    console.log('start');
+//
+//                    var source = audioContext.createBufferSource();
+//                    var buffer = audioContext.createBuffer(2, length, 44100);
+//                    buffer.getChannelData(0).set(left, 0, 0);
+//                    buffer.getChannelData(1).set(right, 0, 0);
+//                    source.buffer = buffer;
+//                    source.connect(audioContext.destination);
+//                    source.start();
 
                     /*PLAY*/
 //                    do {

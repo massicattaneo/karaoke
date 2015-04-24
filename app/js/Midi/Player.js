@@ -38,7 +38,6 @@ packages
                 this.midiFile = midiFile;
                 this.ticksPerBeat = midiFile.header.ticksPerBeat;
                 this.samplePosition = 0;
-                this.relativePosition = 0;
                 this.beatsPerMinute = 60;
                 this.samplesLibrary = samplesLibrary;
                 this.p = 0;
@@ -96,7 +95,7 @@ packages
 
                     if (nextEvent.event.subtype === 'setTempo') {
                         this.beatsPerMinute = parseFloat(60000000 / nextEvent.event.microsecondsPerBeat);
-                    } else if (nextEvent.event.subtype === 'noteOn' || nextEvent.event.subtype === 'noteOff') {
+                    } else {
                         this.add(nextEvent.event, nextEvent.event.noteValue);
                     }
 
@@ -108,50 +107,7 @@ packages
                     nextEvent.event.samplePosition = this.samplePosition;
                 }
             },
-            generateNoteonEvents: function () {
-                var nextEvent = null;
-                do {
-                    nextEvent = this.readNextEvent();
-                    this.handleNextEvent(nextEvent);
-                } while (nextEvent);
-
-                var sampleEnd = 0;
-                var temp = new (Class.CollectionOf(MidiEvent.Generic).create())();
-                this.each(function (index, noteValue, event) {
-                    if (event.subtype === 'noteOff') {
-                        var events = temp.getCollection(noteValue);
-                        events.each(function (index, noteValue, eventHere) {
-                            sampleEnd = eventHere.sampleEnd = event.samplePosition;
-                        });
-                        temp.remove(noteValue);
-                    } else if (event.subtype === 'noteOn') {
-                        temp.add(event, noteValue);
-                    }
-                });
-
-                return sampleEnd;
-
-
-                //var pianoSamples = this.samplesLibrary.get('piano');
-                //var left = new Float32Array(samplesToRead);
-                //var right = new Float32Array(samplesToRead);
-                //
-                //do {
-                //    this.handleNextEvent(this.readNextEvent());
-                //} while (this.samplePosition < (samplesToRead + this.relativePosition));
-                //
-                //this.each(function (index, noteValue, event) {
-                //    if (event.subtype === 'noteOff') {
-                //        this.remove(noteValue);
-                //    }
-                //    else if (event.subtype === 'noteOn') {
-                //        var start = event.samplePosition - this.relativePosition;
-                //        var end = Math.min()
-                //    }
-                //});
-                //
-                //this.relativePosition += samplesToRead;
-                //return {left: left, right: right}
+            createAudio: function () {
 
             }
         });
