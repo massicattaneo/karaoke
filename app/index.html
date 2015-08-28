@@ -63,8 +63,9 @@ Completed: <input type="range" id="completed" min="0" max="100" value="0"/>
 //                    scriptNode.connect(audioContext.destination);
 
 
-                    var length = midiPlayer.generateNoteonEvents();
-                    console.log(length);
+//                    var length = midiPlayer.generateNoteonEvents();
+//                    console.log(length);
+
 //                    var left = new Float32Array(length);
 //
 //                    var right = new Float32Array(length);
@@ -92,20 +93,20 @@ Completed: <input type="range" id="completed" min="0" max="100" value="0"/>
 //                    source.start();
 
                     /*PLAY*/
-//                    do {
-//                        nextEvent = midiPlayer.readNextEvent();
-//                        if (nextEvent) {
-//                            if (nextEvent.event.subtype === 'setTempo') {
-//                                beatsPerMinute = nextEvent.event.execute();
-//                            }
-//                            var beatsToNextEvent = nextEvent.ticksToEvent / ticksPerBeat;
-//                            var secondsToNextEvent = beatsToNextEvent / (beatsPerMinute / 60);
-//                            playTime = playTime + secondsToNextEvent;
-//                            if (nextEvent.event.subtype === 'noteOn') {
-//                                nextEvent.event.execute(playAudio, pianoSamples, playTime);
-//                            }
-//                        }
-//                    } while (nextEvent);
+                    do {
+                        nextEvent = midiPlayer.readNextEvent();
+                        if (nextEvent) {
+                            if (nextEvent.event.subtype === 'setTempo') {
+                                beatsPerMinute = nextEvent.event.execute();
+                            }
+                            var beatsToNextEvent = nextEvent.ticksToEvent / ticksPerBeat;
+                            var secondsToNextEvent = beatsToNextEvent / (beatsPerMinute / 60);
+                            playTime = playTime + secondsToNextEvent;
+                            if (nextEvent.event.subtype === 'noteOn') {
+                                nextEvent.event.execute(playAudio, pianoSamples, playTime);
+                            }
+                        }
+                    } while (nextEvent);
                 });
 
     }
