@@ -51,7 +51,7 @@
         var AudioSamples = Class.CollectionOf(AudioSample).create({
             constructor: function (instrument, instrumentName) {
                 var self = this;
-                this.super();
+                this.parent();
                 this.instrument = instrument;
                 this.instrumentName = instrumentName;
                 this.promise = new Promise();
@@ -69,7 +69,7 @@
             load: function () {
                 var self = this;
                 var instrument = this.instrument;
-                for (var i in instrument.sampleNames) {
+                Object.keys(instrument.sampleNames).forEach(function (i) {
                     var noteValue = new MidiNote(instrument.sampleNames[i]).value;
                     var sampleUrl = instrument.folder + instrument.sampleNames[i] + '.wav';
                     var sample = new AudioSample(noteValue, sampleUrl);
@@ -77,8 +77,8 @@
                     promise.onDone(function (audioSample) {
                         self.add(audioSample, audioSample.noteValue);
                     });
-                    this.promises.add(promise);
-                }
+                    self.promises.add(promise);
+                });
                 return this.promise;
             },
             resampleMissing: function () {
@@ -110,11 +110,11 @@
             var promises = new Promises(instruments.length),
                 loadPromise = new Promise();
 
-            for (var index in instruments) {
+            Object.keys(instruments).forEach(function (index) {
                 var instrumentName = instruments[index];
                 var audioSamples = library.add(new AudioSamples(settings[instrumentName], instrumentName), instrumentName);
                 promises.add(audioSamples.load());
-            }
+            });
 
             promises.onDone(function () {
                 loadPromise.resolve(library);

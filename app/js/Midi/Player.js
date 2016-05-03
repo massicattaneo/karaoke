@@ -27,7 +27,7 @@ packages
 
         var MidiPlayer = Class.CollectionOf(MidiEvent.Generic).create({
             constructor: function (midiFile, samplesLibrary) {
-                this.super();
+                this.parent();
                 var self = this;
                 this.states = new (Class.CollectionOf(TrackState).create())();
 

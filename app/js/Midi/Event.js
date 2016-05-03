@@ -21,7 +21,7 @@ packages
 
         this.NoteOff = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, noteValue, velocity) {
-                this.super(deltaTime, channel, 'noteOff');
+                this.parent(deltaTime, channel, 'noteOff');
                 this.noteValue = noteValue;
                 this.velocity = velocity;
             }
@@ -29,7 +29,7 @@ packages
 
         this.NoteOn = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, noteValue, velocity) {
-                this.super(deltaTime, channel, 'noteOn');
+                this.parent(deltaTime, channel, 'noteOn');
                 this.noteValue = noteValue;
                 this.velocity = velocity;
             },
@@ -40,7 +40,7 @@ packages
 
         this.NoteAftertouch = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, noteValue, amount) {
-                this.super(deltaTime, channel, 'noteAftertouch');
+                this.parent(deltaTime, channel, 'noteAftertouch');
                 this.noteValue = noteValue;
                 this.amount = amount;
             }
@@ -48,7 +48,7 @@ packages
 
         this.Controller = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, controllerType, value) {
-                this.super(deltaTime, channel, 'controller');
+                this.parent(deltaTime, channel, 'controller');
                 this.controllerType = controllerType;
                 this.value = value;
             }
@@ -56,21 +56,21 @@ packages
 
         this.ProgramChange = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, programNumber) {
-                this.super(deltaTime, channel, 'programChange');
+                this.parent(deltaTime, channel, 'programChange');
                 this.programNumber = programNumber;
             }
         });
 
         this.ChannelAfterTouch = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, amount) {
-                this.super(deltaTime, channel, 'channelAftertouch');
+                this.parent(deltaTime, channel, 'channelAftertouch');
                 this.amount = amount;
             }
         });
 
         this.PitchBend = Class.extend(this.Channel).create({
             constructor: function (deltaTime, channel, value) {
-                this.super(deltaTime, channel, 'channelAftertouch');
+                this.parent(deltaTime, channel, 'channelAftertouch');
                 this.value = value;
             }
         });
@@ -91,63 +91,63 @@ packages
         this.SequenceNumber = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length, number) {
                 this.checkLength(length, 2);
-                this.super('sequenceNumber', deltaTime);
+                this.parent('sequenceNumber', deltaTime);
                 this.number = number;
             }
         });
 
         this.Text = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('text', deltaTime);
+                this.parent('text', deltaTime);
                 this.text = text;
             }
         });
 
         this.CopyrightNotice = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('copyrightNotice', deltaTime);
+                this.parent('copyrightNotice', deltaTime);
                 this.text = text;
             }
         });
 
         this.TrackName = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('trackName', deltaTime);
+                this.parent('trackName', deltaTime);
                 this.text = text;
             }
         });
 
         this.InstrumentName = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('instrumentName', deltaTime);
+                this.parent('instrumentName', deltaTime);
                 this.text = text;
             }
         });
 
         this.Lyrics = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('lyrics', deltaTime);
+                this.parent('lyrics', deltaTime);
                 this.text = text;
             }
         });
 
         this.Marker = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('marker', deltaTime);
+                this.parent('marker', deltaTime);
                 this.text = text;
             }
         });
 
         this.CuePoint = Class.extend(this.Meta).create({
             constructor: function (deltaTime, text) {
-                this.super('cuePoint', deltaTime);
+                this.parent('cuePoint', deltaTime);
                 this.text = text;
             }
         });
 
         this.MidiChannelPrefix = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length, channel) {
-                this.super('midiChannelPrefix', deltaTime);
+                this.parent('midiChannelPrefix', deltaTime);
                 this.checkLength(length, 1);
                 this.channel = channel;
             }
@@ -155,14 +155,14 @@ packages
 
         this.EndOfTrack = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length) {
-                this.super('endOfTrack', deltaTime);
+                this.parent('endOfTrack', deltaTime);
                 this.checkLength(length, 0);
             }
         });
 
         this.SetTempo = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length, microsecondsPerBeat) {
-                this.super('setTempo', deltaTime);
+                this.parent('setTempo', deltaTime);
                 this.checkLength(length, 3);
                 this.microsecondsPerBeat = microsecondsPerBeat;
             },
@@ -173,7 +173,7 @@ packages
 
         this.SmpteOffset = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length, hourByte, minutes, seconds, frame, subframe) {
-                this.super('smpteOffset', deltaTime);
+                this.parent('smpteOffset', deltaTime);
                 this.checkLength(length, 5);
                 this.frameRate = {
                     0x00: 24, 0x20: 25, 0x40: 29, 0x60: 30
@@ -188,7 +188,7 @@ packages
 
         this.TimeSignature = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length, numerator, denominator, metronome, thirtyseconds) {
-                this.super('timeSignature', deltaTime);
+                this.parent('timeSignature', deltaTime);
                 this.checkLength(length, 4);
                 this.numerator = numerator;
                 this.denominator = denominator;
@@ -199,7 +199,7 @@ packages
 
         this.KeySignature = Class.extend(this.Meta).create({
             constructor: function (deltaTime, length, key, scale) {
-                this.super('keySignature', deltaTime);
+                this.parent('keySignature', deltaTime);
                 this.checkLength(length, 2);
                 this.key = key;
                 this.scale = scale;
@@ -208,7 +208,7 @@ packages
 
         this.SequencerSpecific = Class.extend(this.Meta).create({
             constructor: function (deltaTime, data) {
-                this.super('sequencerSpecific', deltaTime);
+                this.parent('sequencerSpecific', deltaTime);
                 this.data = data;
             }
         });

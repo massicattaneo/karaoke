@@ -5,7 +5,7 @@ packages
 
         var Reader = Class.extend(StreamReader).create({
             constructor: function (data) {
-                this.super(data);
+                this.parent(data);
             },
             readSystemMetaEvent: function (eventTypeByte, deltaTime) {
                 if (eventTypeByte === 0xff) {

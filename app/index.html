@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Test load</title>
-    <script src="../bower_components/core/build/core.min.js"></script>
+    <script src="js/core.js"></script>
     <script src="js/Audio/Library.js"></script>
     <script src="js/Midi/File.js"></script>
     <script src="js/Midi/Track.js"></script>
@@ -36,9 +36,9 @@ Completed: <input type="range" id="completed" min="0" max="100" value="0"/>
         loader.add(library.load(['piano']));
         loader.add(midiFile.load(fileName));
         loader
-                .imports('Audio-Context')
-                .imports('Audio-Player')
-                .imports('Midi-Player')
+                .imports('Audio-Context', packages)
+                .imports('Audio-Player', packages)
+                .imports('Midi-Player', packages)
                 .onDone(function (audioContext, playAudio, MidiPlayer, samplesLibrary, midiFile) {
                     var playTime = 10;
                     var pianoSamples = samplesLibrary.get('piano');

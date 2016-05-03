@@ -6,7 +6,7 @@ packages
 
         var MidiFile = Class.CollectionOf(MidiTrack).create({
             constructor: function (binaryData) {
-                this.super();
+                this.parent();
                 this.stream = new StreamReader(binaryData);
                 this.setHeaderInfo();
                 this.setTracksEvents();
@@ -37,7 +37,7 @@ packages
                         throw "Unexpected chunk - expected MTrk, got " + trackChunk.id;
                     }
                     var midiEventsReader = new MidiEventStreamReader(trackChunk.data);
-                    var track = this.new();
+                    var track = this.newItem();
                     while (!midiEventsReader.eof()) {
                         track.add(midiEventsReader.readEvent());
                     }
